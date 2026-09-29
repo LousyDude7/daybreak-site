@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Daybreak Support</title>
+<meta name="description" content="Help with Daybreak: restoring Pro, managing your monthly plan, refunds, iCloud sync and deleting your data.">
+<link rel="icon" type="image/png" href="img/favicon.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Sora:wght@500..700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,1,0&icon_names=all_inclusive,arrow_back,cloud_sync,delete,group,help,lock,restore,shopping_bag,undo&display=block">
+<style>
+/* Layout: the landing page's morning sky over a grid of glass answer cards; a lime help panel; night footer. */
+:root {
+  --ink: #0F1115;
+  --paper: #F3F4F1;
+  --muted: #5E6470;
+  --lime: #C8F53C;
+  --lime-ink: #3F5A08;
+  --yellow: #FFE45C;
+  --purple: #B9A8FF;
+  --purple-ink: #3B2D8A;
+  --mint: #8FEBD2;
+  --night: #0E0F12;
+  --night-text: #F3F4F1;
+  --night-muted: #A2A7B1;
+  --display: "Sora", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --body: "DM Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --gutter: max(16px, 4.5vw);
+  color-scheme: light;
+}
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: clip; }
+a { color: inherit; text-decoration: none; }
+p { margin: 0; }
+:focus-visible { outline: 3px solid var(--purple); outline-offset: 3px; border-radius: 10px; }
+.wrap { width: 100%; max-width: calc(1120px + 2 * var(--gutter)); margin-inline: auto; padding-inline: var(--gutter); }
+.ms { font-family: "Material Symbols Rounded"; font-weight: normal; font-style: normal; font-size: 1.25em; line-height: 1; display: inline-block; white-space: nowrap; font-feature-settings: "liga"; font-variation-settings: "FILL" 1, "wght" 500, "GRAD" 0, "opsz" 24; }
+.glass {
+  background: linear-gradient(135deg, rgba(255, 255, 255, .82), rgba(255, 255, 255, .5));
+  -webkit-backdrop-filter: blur(20px) saturate(170%); backdrop-filter: blur(20px) saturate(170%);
+  border: 1px solid rgba(255, 255, 255, .9);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .95), 0 1px 2px rgba(15, 17, 21, .05), 0 18px 40px -18px rgba(15, 17, 21, .2);
+}
+
+.nav-wrap { position: fixed; left: 0; right: 0; top: 0; z-index: 50; padding: calc(12px + env(safe-area-inset-top, 0px)) var(--gutter) 0; pointer-events: none; }
+.nav { pointer-events: auto; max-width: 1080px; margin: 0 auto; display: flex; align-items: center; gap: 16px; padding: 7px 7px 7px 14px; border-radius: 999px; }
+.brand { display: inline-flex; align-items: center; gap: 10px; font-family: var(--display); font-weight: 600; font-size: 18px; letter-spacing: -.01em; }
+.brand-mark { width: 30px; height: 30px; border-radius: 9px; flex: none; display: grid; place-items: center; background: var(--lime); color: var(--ink); box-shadow: inset 0 -2px 0 rgba(63, 90, 8, .18); }
+.nav-links { display: flex; gap: 2px; margin-left: auto; }
+.nav-links a { display: inline-flex; align-items: center; gap: 6px; min-height: 42px; padding: 0 16px; border-radius: 999px; font-weight: 600; font-size: 15px; color: var(--muted); }
+.nav-links a:hover { color: var(--ink); background: rgba(15, 17, 21, .05); }
+.nav-links .ms { font-size: 19px; }
+
+.doc-hero {
+  position: relative; overflow: hidden;
+  padding-block: calc(132px + env(safe-area-inset-top, 0px)) 8px;
+  background:
+    radial-gradient(45% 60% at 50% 0%, rgba(255, 228, 92, .40), transparent 72%),
+    radial-gradient(34% 50% at 10% 20%, rgba(200, 245, 60, .28), transparent 72%),
+    radial-gradient(34% 55% at 92% 30%, rgba(185, 168, 255, .32), transparent 72%),
+    var(--paper);
+}
+.eyebrow { margin-bottom: 12px; font-size: 13px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--lime-ink); }
+.doc-hero h1 { margin: 0; font-family: var(--display); font-weight: 700; font-size: clamp(40px, 6.2vw, 76px); line-height: 1; letter-spacing: -.048em; text-wrap: balance; }
+.lead { margin-top: 18px; max-width: 36em; font-size: clamp(17px, 1.6vw, 20px); color: var(--muted); text-wrap: pretty; }
+
+.answers { list-style: none; margin: 40px 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.answers li { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 16px; padding: 22px; border-radius: 24px; }
+.answers .ic { width: 44px; height: 44px; border-radius: 13px; display: grid; place-items: center; background: var(--c); color: var(--ink); }
+.answers .ic .ms { font-size: 22px; }
+.answers h2 { margin: 0; font-family: var(--display); font-weight: 600; font-size: 19px; line-height: 1.25; letter-spacing: -.015em; }
+.answers p { margin-top: 6px; font-size: 15.5px; line-height: 1.55; color: var(--muted); }
+.answers p + p { margin-top: 10px; }
+.path { font-weight: 600; color: var(--ink); }
+.answers a { color: var(--purple-ink); font-weight: 600; text-decoration: underline; text-decoration-color: rgba(59, 45, 138, .35); text-underline-offset: 3px; }
+
+.help {
+  position: relative; overflow: hidden;
+  margin: 18px 0 clamp(80px, 9vw, 120px);
+  padding: clamp(26px, 4vw, 44px);
+  border-radius: clamp(26px, 3.5vw, 40px);
+  background: var(--lime);
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 18px 32px; align-items: center;
+}
+.help::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(circle at 50% 100%, rgba(63, 90, 8, .085) 0 49.5%, transparent 50%) 0 0 / 132px 66px;
+  -webkit-mask-image: linear-gradient(180deg, transparent 20%, #000 90%);
+  mask-image: linear-gradient(180deg, transparent 20%, #000 90%);
+}
+.help > * { position: relative; min-width: 0; }
+.help h2 { margin: 0; font-family: var(--display); font-weight: 700; font-size: clamp(28px, 3.6vw, 40px); line-height: 1.05; letter-spacing: -.035em; }
+.help p { margin-top: 10px; max-width: 40em; color: #2E3A10; }
+.apple-btn {
+  display: inline-flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 22px; border-radius: 999px;
+  background: var(--ink); color: #fff; font-weight: 600; font-size: 15.5px; white-space: nowrap;
+  box-shadow: 0 14px 30px -14px rgba(15, 17, 21, .6);
+}
+.apple-btn .ms { color: var(--lime); font-size: 20px; }
+
+.foot { background: var(--night); color: var(--night-muted); }
+.foot-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 28px; padding-block: 28px; }
+.foot .brand { color: var(--night-text); font-size: 16px; }
+.foot .brand-mark { width: 26px; height: 26px; border-radius: 8px; }
+.foot nav { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 14.5px; }
+.foot nav a:hover, .foot nav a[aria-current="page"] { color: var(--night-text); }
+.copy { font-size: 14px; }
+
+@media (max-width: 820px) {
+  .answers { grid-template-columns: minmax(0, 1fr); }
+  .help { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 600px) {
+  .nav-links .label { display: none; }
+  .answers li { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .foot-inner { flex-direction: column; align-items: flex-start; }
+}
+</style>
+
+<header class="nav-wrap">
+  <nav class="nav glass" aria-label="Main">
+    <a class="brand" href="./" aria-label="Daybreak home">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="4.3" fill="currentColor" stroke="none"/><path d="M12 2.6v2.3M12 19.1v2.3M2.6 12h2.3M19.1 12h2.3M5.35 5.35 7 7M17 17l1.65 1.65M5.35 18.65 7 17M17 7l1.65-1.65"/></svg>
+      </span>
+      <span>Daybreak</span>
+    </a>
+    <div class="nav-links">
+      <a href="./"><span class="ms" aria-hidden="true">arrow_back</span><span class="label">Home</span></a>
+      <a href="privacy.html"><span class="ms" aria-hidden="true">lock</span><span class="label">Privacy</span></a>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <section class="doc-hero">
+    <div class="wrap">
+      <p class="eyebrow">Support</p>
+      <h1>Help with Daybreak.</h1>
+      <p class="lead">Answers to the common questions. Almost everything can be done yourself, right in the app.</p>
+
+      <ul class="answers">
+        <li class="glass" id="restore">
+          <span class="ic" style="--c: var(--lime)"><span class="ms" aria-hidden="true">restore</span></span>
+          <div>
+            <h2>Restore Daybreak Pro</h2>
+            <p>Pro belongs to your Apple Account, not to a Daybreak sign-in. On a new iPhone, or after reinstalling, open <span class="path">Daybreak → Settings → Daybreak Pro → Restore Purchases</span>, or tap Restore at the top of the Pro screen. Use the same Apple Account that bought it.</p>
+          </div>
+        </li>
+        <li class="glass" id="manage">
+          <span class="ic" style="--c: var(--mint)"><span class="ms" aria-hidden="true">shopping_bag</span></span>
+          <div>
+            <h2>Manage or cancel the monthly plan</h2>
+            <p>Open <span class="path">Daybreak → Settings → Daybreak Pro → Manage subscription</span>, or <span class="path">iPhone Settings → your name → Subscriptions → Daybreak</span>. If you cancel, Pro stays on until the end of the month you've paid for.</p>
+          </div>
+        </li>
+        <li class="glass" id="lifetime">
+          <span class="ic" style="--c: var(--yellow)"><span class="ms" aria-hidden="true">all_inclusive</span></span>
+          <div>
+            <h2>Switch from Monthly to Lifetime</h2>
+            <p>Open <span class="path">Daybreak → Settings → Daybreak Pro → Switch to Lifetime</span>. Then cancel the monthly plan in Manage subscription so it isn't charged again. Daybreak reminds you there until you do.</p>
+          </div>
+        </li>
+        <li class="glass" id="refunds">
+          <span class="ic" style="--c: var(--purple)"><span class="ms" aria-hidden="true">undo</span></span>
+          <div>
+            <h2>Refunds</h2>
+            <p>Apple handles every payment, so refunds are requested from Apple: go to <a href="https://reportaproblem.apple.com" target="_blank" rel="noopener">reportaproblem.apple.com</a>, sign in with your Apple Account, choose Request a refund and pick Daybreak Pro. Apple decides and lets you know.</p>
+            <p>If Pro is refunded, the Pro features lock again, but nothing you made is deleted.</p>
+          </div>
+        </li>
+        <li class="glass" id="family">
+          <span class="ic" style="--c: var(--lime)"><span class="ms" aria-hidden="true">group</span></span>
+          <div>
+            <h2>Family Sharing</h2>
+            <p>Daybreak Pro isn't shared through Family Sharing at the moment. Each Apple Account buys its own.</p>
+          </div>
+        </li>
+        <li class="glass" id="icloud">
+          <span class="ic" style="--c: var(--mint)"><span class="ms" aria-hidden="true">cloud_sync</span></span>
+          <div>
+            <h2>Your mornings and iCloud</h2>
+            <p>Your routine and history sync through your own iCloud. If a device looks out of date, check <span class="path">Daybreak → Settings → iCloud sync</span>, and that the iPhone is signed in to iCloud.</p>
+            <p>Don't delete the app while mornings are missing: it keeps a backup on the device that can bring them back.</p>
+          </div>
+        </li>
+        <li class="glass" id="delete">
+          <span class="ic" style="--c: var(--yellow)"><span class="ms" aria-hidden="true">delete</span></span>
+          <div>
+            <h2>Deleting your data</h2>
+            <p><span class="path">Daybreak → Settings → Delete account</span> removes your routine, your history (on your iPhone and in iCloud), your sign-in and your settings. Workouts and mindful minutes stay in Apple Health; delete them there if you like.</p>
+          </div>
+        </li>
+        <li class="glass" id="privacy">
+          <span class="ic" style="--c: var(--purple)"><span class="ms" aria-hidden="true">lock</span></span>
+          <div>
+            <h2>Privacy</h2>
+            <p>No ads, no tracking, no account needed. Your mornings stay on your iPhone and in your own iCloud. Read the <a href="privacy.html">privacy policy</a>.</p>
+          </div>
+        </li>
+      </ul>
+
+      <div class="help">
+        <div>
+          <h2>Still need help?</h2>
+          <p>A support email for Daybreak is coming soon and will be listed here. For anything about a purchase, a subscription or a refund, Apple can help right away.</p>
+        </div>
+        <a class="apple-btn" href="https://reportaproblem.apple.com" target="_blank" rel="noopener"><span class="ms" aria-hidden="true">help</span>Get help from Apple</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-inner">
+    <a class="brand" href="./" aria-label="Daybreak home">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="4.3" fill="currentColor" stroke="none"/><path d="M12 2.6v2.3M12 19.1v2.3M2.6 12h2.3M19.1 12h2.3M5.35 5.35 7 7M17 17l1.65 1.65M5.35 18.65 7 17M17 7l1.65-1.65"/></svg>
+      </span>
+      <span>Daybreak</span>
+    </a>
+    <nav aria-label="Legal">
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="support.html" aria-current="page">Support</a>
+      <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener">Terms of Use</a>
+    </nav>
+    <p class="copy">© 2026 Daybreak</p>
+  </div>
+</footer>
+
+</html>

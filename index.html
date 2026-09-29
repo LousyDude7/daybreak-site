@@ -1,0 +1,1033 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Daybreak</title>
+<meta name="description" content="Daybreak is an iPhone app for your morning routine. Build it once, then follow one full-screen stage at a time, with a dot that paces every rep.">
+<meta property="og:title" content="Daybreak: one routine, every morning">
+<meta property="og:description" content="Your morning routine, timed, start to finish. Coming soon to iPhone.">
+<meta name="theme-color" content="#F3F4F1">
+<link rel="icon" type="image/png" href="img/favicon.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Sora:wght@500..700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,1,0&icon_names=air,alarm,arrow_downward,arrow_forward,bed,calendar_month,check,cloud,directions_run,edit,favorite,history,local_fire_department,lock,notifications,palette,phone_iphone,trending_up,water_drop,weekend&display=block">
+<style>
+/* Layout: a sunrise. A light, airy sky where a liquid-glass sun rises over a dark horizon
+   behind a 3D phone; below the horizon the page is night, lit by the app's four stage colors. */
+:root {
+  /* Color: Daybreak's own palette, from the app's Theme.swift */
+  --ink: #0F1115;
+  --paper: #F3F4F1;
+  --muted: #5E6470;
+  --lime: #C8F53C;
+  --lime-ink: #3F5A08;
+  --yellow: #FFE45C;
+  --purple: #B9A8FF;
+  --purple-ink: #3B2D8A;
+  --mint: #8FEBD2;
+  --mint-ink: #135E4C;
+  --night: #0E0F12;
+  --night-text: #F3F4F1;
+  --night-muted: #A2A7B1;
+  /* Type: the app's faces. Sora for display, DM Sans for everything read */
+  --display: "Sora", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --body: "DM Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --gutter: max(16px, 4.5vw);
+  --wrap: 1180px;
+  color-scheme: light;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 17px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: clip;
+}
+img { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+p { margin: 0; }
+section[id] { scroll-margin-top: 88px; }
+:focus-visible { outline: 3px solid var(--purple); outline-offset: 3px; border-radius: 14px; }
+
+.wrap {
+  width: 100%;
+  max-width: calc(var(--wrap) + 2 * var(--gutter));
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+.ms {
+  font-family: "Material Symbols Rounded";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 1.25em;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  font-feature-settings: "liga";
+  font-variation-settings: "FILL" 1, "wght" 500, "GRAD" 0, "opsz" 24;
+}
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* Liquid glass, light and dark */
+.glass {
+  background: linear-gradient(135deg, rgba(255, 255, 255, .80), rgba(255, 255, 255, .48));
+  -webkit-backdrop-filter: blur(20px) saturate(170%);
+  backdrop-filter: blur(20px) saturate(170%);
+  border: 1px solid rgba(255, 255, 255, .9);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .95), 0 1px 2px rgba(15, 17, 21, .05), 0 18px 40px -16px rgba(15, 17, 21, .22);
+}
+.glass-dark {
+  background: linear-gradient(180deg, rgba(255, 255, 255, .085), rgba(255, 255, 255, .025));
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  backdrop-filter: blur(24px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, .09);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .09);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 44px; padding: 0 20px; border-radius: 999px;
+  font-family: var(--body); font-weight: 600; font-size: 15px;
+  transition: transform .2s ease, background-color .2s ease, box-shadow .2s ease;
+}
+.btn:active { transform: scale(.97); }
+.btn-ink { background: var(--ink); color: #fff; }
+.btn-ink .ms { color: var(--lime); font-size: 20px; }
+.btn-ink:hover { box-shadow: 0 10px 24px -10px rgba(15, 17, 21, .6); }
+.btn-glass { color: var(--ink); min-height: 56px; padding: 0 24px; border-radius: 18px; font-size: 16px; }
+.btn-glass .ms { font-size: 20px; }
+.btn-glass:hover { background: rgba(255, 255, 255, .92); }
+
+.store {
+  display: inline-flex; align-items: center; gap: 10px;
+  min-height: 56px; padding: 0 22px 0 16px; border-radius: 18px;
+  background: var(--ink); color: #fff;
+  box-shadow: 0 16px 34px -14px rgba(15, 17, 21, .55), inset 0 1px 0 rgba(255, 255, 255, .12);
+  transition: transform .2s ease;
+}
+a.store:active { transform: scale(.97); }
+.store .ms { font-size: 30px; font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24; }
+.store-text { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.08; }
+.store-text small { font-size: 11px; font-weight: 500; opacity: .72; letter-spacing: .01em; }
+.store-text b { font-family: var(--display); font-weight: 600; font-size: 19px; letter-spacing: -.01em; }
+.store-light { background: #fff; color: var(--ink); box-shadow: 0 20px 50px -18px rgba(200, 245, 60, .55); }
+
+/* Navigation */
+.nav-wrap {
+  position: fixed; left: 0; right: 0; top: 0; z-index: 50;
+  padding: calc(12px + env(safe-area-inset-top, 0px)) var(--gutter) 0;
+  pointer-events: none;
+}
+.nav {
+  pointer-events: auto;
+  max-width: 1080px; margin: 0 auto;
+  display: flex; align-items: center; gap: 18px;
+  padding: 7px 7px 7px 14px; border-radius: 999px;
+}
+.brand { display: inline-flex; align-items: center; gap: 10px; font-family: var(--display); font-weight: 600; font-size: 18px; letter-spacing: -.01em; }
+.brand-mark {
+  width: 30px; height: 30px; border-radius: 9px; flex: none;
+  display: grid; place-items: center;
+  background: var(--lime); color: var(--ink);
+  box-shadow: inset 0 -2px 0 rgba(63, 90, 8, .18);
+}
+.nav-links { display: flex; gap: 2px; margin: 0 0 0 auto; padding: 0; list-style: none; }
+.nav-links a { display: block; padding: 9px 14px; border-radius: 999px; font-weight: 500; font-size: 15px; color: var(--muted); transition: color .2s, background-color .2s; }
+.nav-links a:hover { color: var(--ink); background: rgba(15, 17, 21, .05); }
+
+/* Hero: the sky */
+.hero {
+  position: relative;
+  overflow-x: clip;
+  background:
+    radial-gradient(55% 45% at 50% 58%, rgba(255, 228, 92, .42), transparent 72%),
+    radial-gradient(38% 36% at 14% 22%, rgba(200, 245, 60, .30), transparent 72%),
+    radial-gradient(40% 40% at 88% 26%, rgba(185, 168, 255, .34), transparent 72%),
+    radial-gradient(34% 30% at 76% 64%, rgba(143, 235, 210, .30), transparent 72%),
+    var(--paper);
+}
+.hero-copy {
+  position: relative; z-index: 5;
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  padding-block: calc(132px + env(safe-area-inset-top, 0px)) 0;
+}
+.pill { display: inline-flex; align-items: center; gap: 10px; padding: 5px 16px 5px 5px; border-radius: 999px; font-size: 14px; font-weight: 500; color: var(--muted); }
+.pill .chip { background: var(--ink); color: var(--lime); font-size: 12px; font-weight: 600; letter-spacing: .02em; padding: 4px 11px; border-radius: 999px; }
+
+.hero-title {
+  margin: 30px 0 0;
+  font-family: var(--display); font-weight: 700;
+  font-size: clamp(46px, 7.4vw, 98px);
+  line-height: .98; letter-spacing: -.048em;
+  text-wrap: balance;
+}
+.title-inner { position: relative; display: inline-block; }
+.grad {
+  background: linear-gradient(95deg, #4F7C06 0%, var(--mint-ink) 52%, var(--purple-ink) 100%);
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent;
+  padding-bottom: .06em;
+}
+.tag {
+  position: absolute; left: -.2em; top: -.46em;
+  transform: rotate(-7deg);
+  background: var(--lime); color: var(--ink);
+  font-family: var(--body); font-weight: 700; font-size: 13px; letter-spacing: .1em; text-transform: uppercase;
+  line-height: 1; padding: 8px 12px; border-radius: 10px;
+  box-shadow: 0 10px 22px -10px rgba(63, 90, 8, .55), inset 0 -2px 0 rgba(63, 90, 8, .16);
+  white-space: nowrap;
+}
+.spark { position: absolute; width: var(--s); height: var(--s); pointer-events: none; }
+.spark path { fill: var(--c); }
+.s1 { --s: 30px; --c: var(--purple); right: -44px; top: -26px; }
+.s2 { --s: 20px; --c: #A6D81C; left: -46px; top: 58%; }
+.s3 { --s: 16px; --c: #F2C94C; right: -20px; bottom: 6%; }
+.s4 { --s: 12px; --c: var(--purple); left: 18%; bottom: -20px; }
+
+.lede { margin-top: 22px; max-width: 33em; font-size: clamp(17px, 1.6vw, 20px); color: var(--muted); text-wrap: pretty; }
+.cta-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 32px; }
+
+/* The 3D scene: sun, horizon, phone and glass cards */
+.scene { position: relative; height: clamp(620px, 64vw, 860px); margin-top: 26px; clip-path: inset(-1200px -100vw 0 -100vw); }
+.sun-wrap {
+  --size: min(900px, 150vw);
+  position: absolute; left: 50%; top: calc(45% - var(--size) / 2);
+  width: var(--size); aspect-ratio: 1;
+  transform: translateX(-50%);
+  z-index: 1; pointer-events: none;
+  animation: rise 2.8s cubic-bezier(.16, .84, .24, 1) both;
+}
+.sun-wrap canvas { display: block; width: 100%; height: 100%; }
+.sun-fallback {
+  position: absolute; inset: 16%; border-radius: 50%; display: none;
+  background: radial-gradient(circle at 42% 38%, #FFFBE8 0%, var(--yellow) 30%, var(--lime) 66%, #B3A2FF 100%);
+  box-shadow: 0 0 140px 40px rgba(255, 228, 92, .45);
+}
+.no-webgl .sun-fallback { display: block; }
+.no-webgl .sun-wrap canvas { display: none; }
+@keyframes rise {
+  from { transform: translate(-50%, 18%) scale(.94); opacity: .55; }
+  to { transform: translate(-50%, 0) scale(1); opacity: 1; }
+}
+
+.horizon {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 37%; z-index: 2;
+  background: linear-gradient(180deg, #1C1E17 0%, var(--night) 34%);
+  border-radius: 50% 50% 0 0 / clamp(46px, 9vw, 140px) clamp(46px, 9vw, 140px) 0 0;
+  box-shadow: 0 -1px 0 rgba(255, 236, 150, .75), 0 -34px 90px -26px rgba(255, 228, 92, .9);
+}
+
+.phone-wrap {
+  --pw: clamp(214px, 23vw, 300px);
+  position: absolute; left: 50%; top: 8%; z-index: 3;
+  width: var(--pw);
+  transform: translateX(-50%);
+  perspective: 1600px;
+  animation: phone-in 1.7s cubic-bezier(.16, .84, .24, 1) .2s both;
+}
+@keyframes phone-in {
+  from { transform: translate(-50%, 56px); }
+  to { transform: translate(-50%, 0); }
+}
+.phone3d {
+  --rx: 7deg; --ry: -14deg; --rz: 3deg; --glare: -30%;
+  position: relative;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--rx)) rotateY(var(--ry)) rotateZ(var(--rz));
+}
+.phone { --pr: calc(var(--pw) * .165); }
+.pedge {
+  position: absolute; inset: 0; border-radius: var(--pr);
+  background: linear-gradient(90deg, #7B8087, #DADDE1 20%, #A3A8AF 52%, #E4E6E9 78%, #878C93);
+  transform: translateZ(calc(var(--i) * -1.15px));
+}
+.pedge.back { background: #15171B; transform: translateZ(-17px); }
+.pfront {
+  position: relative; overflow: hidden; border-radius: var(--pr);
+  padding: calc(var(--pw) * .024);
+  background: linear-gradient(135deg, #F1F3F5, #B8BDC3 34%, #F5F6F7 56%, #9DA2A9);
+  box-shadow: 0 60px 120px -34px rgba(200, 245, 60, .6), 0 34px 60px -24px rgba(15, 17, 21, .45);
+}
+.pbezel { position: relative; border-radius: calc(var(--pr) - var(--pw) * .024); padding: calc(var(--pw) * .02); background: #07080A; }
+.pscreen { position: relative; overflow: hidden; border-radius: calc(var(--pr) - var(--pw) * .044); aspect-ratio: 1170 / 2532; background: var(--tone, var(--lime)); }
+.pscreen img { width: 100%; height: 100%; object-fit: cover; }
+.island { position: absolute; left: 50%; top: calc(var(--pw) * .028); width: 30%; height: calc(var(--pw) * .085); transform: translateX(-50%); border-radius: 999px; background: #050506; }
+.glare {
+  position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(105deg, transparent 32%, rgba(255, 255, 255, .26) 46%, rgba(255, 255, 255, 0) 60%);
+  transform: translateX(var(--glare));
+  mix-blend-mode: screen;
+}
+
+.fcard {
+  position: absolute; z-index: 4;
+  padding: 14px 16px; border-radius: 22px;
+  animation: card-in 1s cubic-bezier(.2, .9, .25, 1) both;
+}
+.fcard.c1 { left: max(var(--gutter), calc(50% - 470px)); top: 27%; animation-delay: .55s; }
+.fcard.c2 { left: min(calc(100% - var(--gutter) - 200px), calc(50% + 236px)); top: 13%; animation-delay: .7s; }
+.fcard.c3 { left: min(calc(100% - var(--gutter) - 196px), calc(50% + 262px)); top: 42%; animation-delay: .85s; }
+@keyframes card-in {
+  from { transform: translateY(16px) scale(.95); }
+  to { transform: none; }
+}
+.fc-row { display: flex; align-items: center; gap: 10px; }
+.fc-ico { width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center; color: var(--ink); flex: none; }
+.fc-ico .ms { font-size: 20px; }
+.fc-big { font-family: var(--display); font-weight: 700; font-size: 32px; letter-spacing: -.03em; line-height: 1; }
+.fc-lbl { font-size: 14px; font-weight: 500; color: var(--muted); }
+.week { display: flex; gap: 6px; margin-top: 12px; }
+.week span { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; }
+.week .done { background: var(--ink); color: var(--lime); }
+.week .done .ms { font-size: 14px; }
+.week .today { border: 2px solid var(--ink); }
+.week .later { border: 2px solid rgba(15, 17, 21, .14); }
+.fc-eyebrow { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.pro-chip { background: var(--lime); color: var(--ink); font-size: 10px; font-weight: 700; letter-spacing: .08em; padding: 3px 7px; border-radius: 999px; }
+.fc-time { margin-top: 6px; font-family: var(--display); font-weight: 700; font-size: 34px; letter-spacing: -.03em; line-height: 1; display: flex; align-items: baseline; gap: 6px; }
+.fc-time small { font-size: 15px; font-weight: 600; letter-spacing: 0; }
+.fc-sub { margin-top: 6px; font-size: 13.5px; color: var(--muted); }
+.fc-stages { display: flex; gap: 6px; margin-top: 10px; }
+.fc-stages span { width: 36px; height: 36px; border-radius: 11px; display: grid; place-items: center; background: var(--c); }
+.fc-stages .ms { font-size: 19px; }
+
+/* Night: everything below the horizon */
+.night { position: relative; background: var(--night); color: var(--night-text); overflow-x: clip; }
+.night::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 320px);
+  mask-image: linear-gradient(180deg, transparent 0, #000 320px);
+  background:
+    radial-gradient(38% 26% at 12% 8%, rgba(200, 245, 60, .10), transparent 72%),
+    radial-gradient(34% 26% at 92% 30%, rgba(185, 168, 255, .13), transparent 72%),
+    radial-gradient(40% 24% at 30% 62%, rgba(143, 235, 210, .08), transparent 72%),
+    radial-gradient(40% 24% at 80% 88%, rgba(255, 228, 92, .07), transparent 72%);
+}
+.night > * { position: relative; }
+.eyebrow { margin-bottom: 14px; font-size: 13px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--lime); }
+.h2 { margin: 0; font-family: var(--display); font-weight: 700; font-size: clamp(36px, 5.2vw, 68px); line-height: 1.02; letter-spacing: -.042em; text-wrap: balance; }
+.sec-lede { margin-top: 18px; max-width: 36em; font-size: clamp(17px, 1.5vw, 19px); color: var(--night-muted); text-wrap: pretty; }
+.sec-head { max-width: 780px; }
+
+.stages { padding-block: clamp(28px, 4vw, 64px) clamp(110px, 11vw, 150px); }
+.stage-row {
+  list-style: none; margin: 60px 0 0; padding: 0;
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(16px, 2.6vw, 36px);
+  align-items: start;
+}
+.stage-row li { display: flex; flex-direction: column; gap: 18px; container-type: inline-size; transition: transform .5s cubic-bezier(.2, .8, .2, 1); }
+.stage-row li:nth-child(1) { transform: rotate(-3deg); }
+.stage-row li:nth-child(2) { transform: translateY(52px) rotate(2deg); }
+.stage-row li:nth-child(3) { transform: translateY(14px) rotate(-2deg); }
+.stage-row li:nth-child(4) { transform: translateY(64px) rotate(3deg); }
+.stage-row li:hover { transform: translateY(var(--lift, 0)) rotate(0deg); }
+.stage-row li:nth-child(2):hover { --lift: 44px; }
+.stage-row li:nth-child(3):hover { --lift: 6px; }
+.stage-row li:nth-child(4):hover { --lift: 56px; }
+.stage-row .phone { --pw: 100cqw; }
+.stage-row .pfront { box-shadow: 0 40px 90px -30px color-mix(in srgb, var(--tone) 55%, transparent), 0 24px 40px -22px rgba(0, 0, 0, .6); }
+.cap { display: flex; align-items: center; gap: 10px; font-size: 15px; color: var(--night-muted); }
+.cap .dot { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; background: var(--tone); color: var(--ink); flex: none; }
+.cap .dot .ms { font-size: 17px; }
+.cap b { color: var(--night-text); font-weight: 600; }
+
+.build { padding-bottom: clamp(90px, 10vw, 140px); }
+.lime-panel {
+  position: relative; overflow: hidden;
+  border-radius: clamp(28px, 4vw, 48px);
+  background: var(--lime); color: var(--ink);
+  padding: clamp(28px, 5.5vw, 72px);
+  display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: clamp(28px, 5vw, 64px);
+  align-items: center;
+}
+.lime-panel::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(circle at 50% 100%, rgba(63, 90, 8, .085) 0 49.5%, transparent 50%) 0 0 / 132px 66px;
+  -webkit-mask-image: linear-gradient(180deg, transparent 10%, #000 75%);
+  mask-image: linear-gradient(180deg, transparent 10%, #000 75%);
+}
+.lime-panel > * { position: relative; min-width: 0; }
+.lime-panel .eyebrow { color: var(--lime-ink); }
+.huge { margin: 0; font-family: var(--display); font-weight: 700; font-size: clamp(60px, 9.4vw, 136px); line-height: .9; letter-spacing: -.058em; }
+.lp-copy p { margin-top: 24px; max-width: 25em; font-size: 18px; color: #2E3A10; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.steps li {
+  display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 16px; align-items: start;
+  padding: 18px; border-radius: 22px;
+  background: rgba(255, 255, 255, .55); border: 1px solid rgba(255, 255, 255, .75);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9);
+}
+.steps .n { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; background: var(--ink); color: var(--lime); font-family: var(--display); font-weight: 700; font-size: 18px; }
+.steps b { font-family: var(--display); font-weight: 600; font-size: 19px; letter-spacing: -.012em; }
+.steps p { margin-top: 3px; font-size: 15.5px; color: #3A4418; }
+
+.features { padding-bottom: clamp(90px, 10vw, 140px); }
+.bento { margin-top: 52px; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 16px; }
+.tile { position: relative; overflow: hidden; border-radius: 28px; padding: 26px; min-width: 0; display: flex; flex-direction: column; }
+.tile h3 { margin: 0; font-family: var(--display); font-weight: 600; font-size: 21px; letter-spacing: -.016em; }
+.tile p { margin-top: 8px; font-size: 15.5px; color: var(--night-muted); }
+.tile .ic { width: 42px; height: 42px; border-radius: 13px; display: grid; place-items: center; color: var(--ink); background: var(--c); margin-bottom: 22px; }
+.tile .ic .ms { font-size: 22px; }
+.t-wide { grid-column: span 3; }
+.t-small { grid-column: span 2; }
+.t-lime { background: var(--lime); color: var(--ink); }
+.t-lime p { color: #34410F; }
+.art { margin-bottom: 26px; flex: 1; display: flex; align-items: flex-start; }
+.streak-art { display: grid; grid-template-columns: auto 1fr; gap: 26px; align-items: center; width: 100%; }
+.streak-num { display: flex; flex-direction: column; }
+.streak-num .row { display: flex; align-items: center; gap: 6px; }
+.streak-num .ms { color: var(--lime); font-size: 34px; }
+.streak-num b { font-family: var(--display); font-weight: 700; font-size: 64px; letter-spacing: -.04em; line-height: 1; }
+.streak-num span { font-size: 14px; color: var(--night-muted); }
+.grid5 { display: grid; grid-template-columns: repeat(7, minmax(0, 20px)); gap: 6px; justify-content: end; }
+.grid5 i { aspect-ratio: 1; border-radius: 6px; background: rgba(255, 255, 255, .08); }
+.grid5 i.on { background: var(--lime); }
+.grid5 i.now { background: transparent; box-shadow: inset 0 0 0 2px var(--night-text); }
+.grid5 i.soon { background: rgba(255, 255, 255, .035); }
+.widget-art { display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap; }
+.widget {
+  width: 148px; aspect-ratio: 1; border-radius: 30px; padding: 16px;
+  background: var(--ink); color: #fff;
+  display: flex; flex-direction: column; justify-content: space-between;
+  box-shadow: 0 20px 40px -18px rgba(15, 17, 21, .55);
+}
+.widget small { font-size: 11px; font-weight: 600; letter-spacing: .08em; color: var(--lime); }
+.widget b { font-family: var(--display); font-size: 30px; letter-spacing: -.03em; line-height: 1; }
+.widget span { font-size: 12.5px; color: #B9BDC6; }
+.live {
+  display: flex; align-items: center; gap: 10px; padding: 10px 14px 10px 10px; border-radius: 999px;
+  background: var(--ink); color: #fff; font-size: 13px; font-weight: 500;
+  box-shadow: 0 20px 40px -18px rgba(15, 17, 21, .55);
+}
+.live .ico { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--lime); color: var(--ink); }
+.live .ico .ms { font-size: 17px; }
+.live em { font-style: normal; color: var(--lime); font-variant-numeric: tabular-nums; }
+
+.pro { padding-bottom: clamp(90px, 10vw, 140px); }
+.pro-grid { margin-top: 52px; display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: clamp(20px, 3vw, 40px); align-items: start; }
+.pro-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.pro-list li { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 14px; padding: 18px; border-radius: 22px; }
+.pro-list .ic { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--c); color: var(--ink); }
+.pro-list .ic .ms { font-size: 21px; }
+.pro-list b { font-family: var(--display); font-weight: 600; font-size: 17px; letter-spacing: -.01em; }
+.pro-list p { margin-top: 3px; font-size: 14.5px; color: var(--night-muted); }
+.plans { display: grid; gap: 12px; position: sticky; top: 104px; }
+.plan { border-radius: 26px; padding: 24px 24px 22px; }
+.plan-name { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; color: var(--night-muted); }
+.plan-price { margin-top: 12px; display: flex; align-items: baseline; gap: 8px; }
+.plan-price b { font-family: var(--display); font-weight: 700; font-size: 48px; letter-spacing: -.035em; line-height: 1; font-variant-numeric: tabular-nums; }
+.plan-price span { font-size: 16px; font-weight: 500; color: var(--night-muted); }
+.plan-note { margin-top: 12px; font-size: 14.5px; color: var(--night-muted); }
+.plan.best { background: var(--lime); color: var(--ink); box-shadow: 0 34px 80px -34px rgba(200, 245, 60, .65); }
+.plan.best .plan-name, .plan.best .plan-note, .plan.best .plan-price span { color: #34410F; }
+.badge { background: var(--ink); color: var(--lime); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 4px 9px; border-radius: 999px; }
+.fine { margin: 4px 6px 0; font-size: 13px; color: var(--night-muted); }
+
+.final { padding-block: clamp(10px, 2vw, 30px) clamp(110px, 12vw, 160px); text-align: center; }
+.promises { list-style: none; margin: 0 auto; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.promises li { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px 10px 12px; border-radius: 999px; font-size: 15px; }
+.promises .ms { color: var(--lime); font-size: 20px; }
+.final-cta { position: relative; margin-top: clamp(80px, 10vw, 120px); display: flex; flex-direction: column; align-items: center; }
+.final-sun {
+  position: absolute; left: 50%; top: 50%; width: min(620px, 110vw); aspect-ratio: 1;
+  transform: translate(-50%, -50%); border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, rgba(255, 228, 92, .30) 0%, rgba(200, 245, 60, .12) 38%, transparent 66%);
+}
+.final-cta .h2 { position: relative; font-size: clamp(42px, 7vw, 92px); letter-spacing: -.05em; }
+.final-cta p { position: relative; margin: 18px 0 32px; font-size: 18px; color: var(--night-muted); }
+.final-cta .store { position: relative; }
+
+.foot { background: var(--night); color: var(--night-muted); border-top: 1px solid rgba(255, 255, 255, .07); }
+.foot-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 28px; padding-block: 28px; }
+.foot .brand { color: var(--night-text); font-size: 16px; }
+.foot .brand-mark { width: 26px; height: 26px; border-radius: 8px; }
+.foot nav { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 14.5px; }
+.foot nav a:hover { color: var(--night-text); }
+.copy { font-size: 14px; }
+
+/* Tablet */
+@media (max-width: 980px) {
+  .fcard.c3 { display: none; }
+  .bento { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .t-wide { grid-column: span 2; }
+  .t-small { grid-column: span 1; }
+  .t-small:last-child { grid-column: span 2; }
+  .pro-grid { grid-template-columns: minmax(0, 1fr); }
+  .plans { position: static; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .plans .fine { grid-column: 1 / -1; }
+}
+@media (max-width: 860px) {
+  .lime-panel { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Phone */
+@media (max-width: 760px) {
+  .nav-links { display: none; }
+  .nav .btn { margin-left: auto; }
+  .hero-copy { padding-top: calc(112px + env(safe-area-inset-top, 0px)); }
+  .s1 { right: -8px; top: -34px; }
+  .s2 { left: -10px; top: 100%; }
+  .s3, .s4 { display: none; }
+  .hero-title { margin-top: 46px; }
+  .tag { font-size: 11px; padding: 7px 10px; left: 2px; top: -32px; }
+  .cta-row { width: 100%; }
+  .cta-row > * { flex: 1 1 200px; justify-content: center; }
+  .scene { height: 610px; margin-top: 20px; }
+  .fcard { padding: 10px 12px; border-radius: 18px; }
+  .fcard.c1 { left: var(--gutter); top: 13%; }
+  .fcard.c2 { left: auto; right: var(--gutter); top: 36%; }
+}
+@media (max-width: 560px) {
+  .fcard { display: none; }
+  .fc-big { font-size: 26px; }
+  .fc-time { font-size: 27px; }
+  .week { gap: 4px; }
+  .week span { width: 18px; height: 18px; }
+  .stage-row {
+    display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
+    gap: 18px; margin-inline: calc(var(--gutter) * -1); padding: 8px var(--gutter) 36px;
+    scrollbar-width: none;
+  }
+  .stage-row::-webkit-scrollbar { display: none; }
+  .stage-row li { flex: 0 0 64%; scroll-snap-align: center; }
+  .stage-row li:nth-child(n) { transform: none; }
+  .bento { grid-template-columns: minmax(0, 1fr); }
+  .t-wide, .t-small, .t-small:last-child { grid-column: auto; }
+  .streak-art { grid-template-columns: minmax(0, 1fr); }
+  .grid5 { justify-content: start; }
+  .pro-list { grid-template-columns: minmax(0, 1fr); }
+  .plans { grid-template-columns: minmax(0, 1fr); }
+  .foot-inner { flex-direction: column; align-items: flex-start; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .sun-wrap, .phone-wrap, .fcard { animation: none; }
+  .stage-row li { transition: none; }
+}
+</style>
+
+<header class="nav-wrap">
+  <nav class="nav glass" aria-label="Main">
+    <a class="brand" href="#top" aria-label="Daybreak, back to top">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="4.3" fill="currentColor" stroke="none"/><path d="M12 2.6v2.3M12 19.1v2.3M2.6 12h2.3M19.1 12h2.3M5.35 5.35 7 7M17 17l1.65 1.65M5.35 18.65 7 17M17 7l1.65-1.65"/></svg>
+      </span>
+      <span>Daybreak</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#stages">How it works</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#pro">Pro</a></li>
+    </ul>
+    <a class="btn btn-ink" href="#get">Get the app <span class="ms" aria-hidden="true">arrow_forward</span></a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero" id="top">
+    <div class="wrap hero-copy">
+      <p class="pill glass"><span class="chip">iPhone</span>Your morning routine, timed</p>
+      <h1 class="hero-title">
+        <span class="title-inner">
+          <span class="tag" aria-hidden="true">Morning routine</span>
+          One routine,<br><span class="grad">every morning.</span>
+          <svg class="spark s1" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5c.7 5.6 4.9 9.8 10.5 10.5-5.6.7-9.8 4.9-10.5 10.5-.7-5.6-4.9-9.8-10.5-10.5C7.1 11.3 11.3 7.1 12 1.5z"/></svg>
+          <svg class="spark s2" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5c.7 5.6 4.9 9.8 10.5 10.5-5.6.7-9.8 4.9-10.5 10.5-.7-5.6-4.9-9.8-10.5-10.5C7.1 11.3 11.3 7.1 12 1.5z"/></svg>
+          <svg class="spark s3" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5c.7 5.6 4.9 9.8 10.5 10.5-5.6.7-9.8 4.9-10.5 10.5-.7-5.6-4.9-9.8-10.5-10.5C7.1 11.3 11.3 7.1 12 1.5z"/></svg>
+          <svg class="spark s4" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5c.7 5.6 4.9 9.8 10.5 10.5-5.6.7-9.8 4.9-10.5 10.5-.7-5.6-4.9-9.8-10.5-10.5C7.1 11.3 11.3 7.1 12 1.5z"/></svg>
+        </span>
+      </h1>
+      <p class="lede">Build your morning once. Daybreak walks you through it every day, one full-screen stage at a time, with a dot that paces every rep.</p>
+      <div class="cta-row">
+        <span class="store" data-store role="img" aria-label="Coming soon to the App Store">
+          <span class="ms" aria-hidden="true">phone_iphone</span>
+          <span class="store-text" aria-hidden="true"><small data-store-line>Coming soon to the</small><b>App Store</b></span>
+        </span>
+        <a class="btn btn-glass glass" href="#stages">See how it works <span class="ms" aria-hidden="true">arrow_downward</span></a>
+      </div>
+    </div>
+
+    <div class="scene" data-scene>
+      <div class="sun-wrap" aria-hidden="true">
+        <canvas data-sun></canvas>
+        <div class="sun-fallback"></div>
+      </div>
+      <div class="horizon" aria-hidden="true"></div>
+
+      <div class="phone-wrap phone">
+        <div class="phone3d" data-phone>
+          <div class="pfront">
+            <div class="pbezel">
+              <div class="pscreen" style="--tone: var(--lime)">
+                <img src="img/stage-pushups.jpg" width="640" height="1385" alt="Daybreak's pushups stage in lime: the pace dot on its box, rep 3 of 20.">
+                <span class="island" aria-hidden="true"></span>
+              </div>
+            </div>
+            <span class="glare" aria-hidden="true"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="fcard c1 glass" data-depth="-16" aria-hidden="true">
+        <div class="fc-row">
+          <span class="fc-ico" style="background: var(--lime)"><span class="ms">local_fire_department</span></span>
+          <span class="fc-big">12</span><span class="fc-lbl">day streak</span>
+        </div>
+        <div class="week">
+          <span class="done"><span class="ms">check</span></span>
+          <span class="done"><span class="ms">check</span></span>
+          <span class="today"></span>
+          <span class="later"></span><span class="later"></span><span class="later"></span><span class="later"></span>
+        </div>
+      </div>
+
+      <div class="fcard c2 glass" data-depth="20" aria-hidden="true">
+        <p class="fc-eyebrow">Wake-up alarm <span class="pro-chip">PRO</span></p>
+        <p class="fc-time">6:45 <small>AM</small></p>
+        <p class="fc-sub">Rings even on silent</p>
+      </div>
+
+      <div class="fcard c3 glass" data-depth="12" aria-hidden="true">
+        <p class="fc-eyebrow">Today · 4 stages</p>
+        <div class="fc-stages">
+          <span style="--c: var(--yellow)"><span class="ms">water_drop</span></span>
+          <span style="--c: var(--lime)"><span class="ms">directions_run</span></span>
+          <span style="--c: var(--purple)"><span class="ms">air</span></span>
+          <span style="--c: var(--mint)"><span class="ms">bed</span></span>
+        </div>
+        <p class="fc-sub">About 6 min</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="night">
+    <section class="stages" id="stages">
+      <div class="wrap">
+        <div class="sec-head">
+          <p class="eyebrow">How a morning runs</p>
+          <h2 class="h2">Every stage gets the whole screen.</h2>
+          <p class="sec-lede">Each stage fills your phone with its own color, so you always know where you are. Reps follow a pacing dot, breathing follows a box, and timers count down in numbers you can read across the room.</p>
+        </div>
+        <ol class="stage-row">
+          <li style="--tone: var(--yellow)">
+            <div class="phone">
+              <div class="pfront"><div class="pbezel"><div class="pscreen" style="--tone: var(--yellow)">
+                <img src="img/stage-water.jpg" width="640" height="1385" loading="lazy" alt="Stage 1, a glass of water, on a yellow page: tap Done when the glass is empty.">
+                <span class="island" aria-hidden="true"></span>
+              </div></div></div>
+            </div>
+            <p class="cap"><span class="dot"><span class="ms" aria-hidden="true">water_drop</span></span><span><b>Fuel</b> · Glass of water</span></p>
+          </li>
+          <li style="--tone: var(--lime)">
+            <div class="phone">
+              <div class="pfront"><div class="pbezel"><div class="pscreen" style="--tone: var(--lime)">
+                <img src="img/stage-pushups.jpg" width="640" height="1385" loading="lazy" alt="Stage 2, pushups, on a lime page: the pace dot moves around a box, rep 3 of 20.">
+                <span class="island" aria-hidden="true"></span>
+              </div></div></div>
+            </div>
+            <p class="cap"><span class="dot"><span class="ms" aria-hidden="true">directions_run</span></span><span><b>Exercise</b> · Pushups, paced</span></p>
+          </li>
+          <li style="--tone: var(--purple)">
+            <div class="phone">
+              <div class="pfront"><div class="pbezel"><div class="pscreen" style="--tone: var(--purple)">
+                <img src="img/stage-breathing.jpg" width="640" height="1385" loading="lazy" alt="Stage 3, box breathing, on a purple page: hold for 2, with 1:54 left.">
+                <span class="island" aria-hidden="true"></span>
+              </div></div></div>
+            </div>
+            <p class="cap"><span class="dot"><span class="ms" aria-hidden="true">air</span></span><span><b>Mindfulness</b> · Box breathing</span></p>
+          </li>
+          <li style="--tone: var(--mint)">
+            <div class="phone">
+              <div class="pfront"><div class="pbezel"><div class="pscreen" style="--tone: var(--mint)">
+                <img src="img/stage-bed.jpg" width="640" height="1385" loading="lazy" alt="Stage 4, make the bed, on a mint page: 1:21 left on the timer.">
+                <span class="island" aria-hidden="true"></span>
+              </div></div></div>
+            </div>
+            <p class="cap"><span class="dot"><span class="ms" aria-hidden="true">bed</span></span><span><b>Extra</b> · Make the bed</span></p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="build" aria-labelledby="build-title">
+      <div class="wrap">
+        <div class="lime-panel">
+          <div class="lp-copy">
+            <p class="eyebrow">Set up in a minute</p>
+            <h2 class="huge" id="build-title">Build it<br>once.</h2>
+            <p>Choose your stages, then set a start time and the days. Every morning after that, Daybreak has it ready.</p>
+          </div>
+          <ol class="steps">
+            <li><span class="n">1</span><div><b>Choose your stages</b><p>Start with fuel, exercise and mindfulness, then add up to two extras, like making the bed.</p></div></li>
+            <li><span class="n">2</span><div><b>Set the time and days</b><p>A reminder arrives at your start time, and a nudge follows if you haven't started.</p></div></li>
+            <li><span class="n">3</span><div><b>Press start and follow</b><p>Reps, breaths and timers are guided on screen. Your streak keeps count.</p></div></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="features" id="features">
+      <div class="wrap">
+        <div class="sec-head">
+          <p class="eyebrow">Free, and complete</p>
+          <h2 class="h2">Everything you need to keep going.</h2>
+        </div>
+        <div class="bento">
+          <article class="tile t-wide glass-dark">
+            <div class="art">
+              <div class="streak-art">
+                <div class="streak-num">
+                  <div class="row"><span class="ms" aria-hidden="true">local_fire_department</span><b>12</b></div>
+                  <span>day streak</span>
+                </div>
+                <div class="grid5" data-grid aria-hidden="true"></div>
+              </div>
+            </div>
+            <h3>A streak you can see</h3>
+            <p>Your streak and a five-week grid of mornings, counted the same way on Today, in History and on your widget.</p>
+          </article>
+          <article class="tile t-wide t-lime">
+            <div class="art">
+              <div class="widget-art" aria-hidden="true">
+                <div class="widget"><small>TODAY</small><b>6:45</b><span>4 stages · 6 min</span></div>
+                <div class="live"><span class="ico"><span class="ms">directions_run</span></span>Pushups <em>12 of 20</em></div>
+              </div>
+            </div>
+            <h3>Start from your Home Screen</h3>
+            <p>Widgets show today's routine at a glance, and a Live Activity keeps your timer on the Lock Screen.</p>
+          </article>
+          <article class="tile t-small glass-dark">
+            <span class="ic" style="--c: var(--purple)"><span class="ms" aria-hidden="true">favorite</span></span>
+            <h3>Apple Health</h3>
+            <p>Exercise stages are saved as workouts and breathing as mindful minutes.</p>
+          </article>
+          <article class="tile t-small glass-dark">
+            <span class="ic" style="--c: var(--mint)"><span class="ms" aria-hidden="true">cloud</span></span>
+            <h3>Syncs with your iCloud</h3>
+            <p>Your routine and history follow you across devices, in your own private iCloud.</p>
+          </article>
+          <article class="tile t-small glass-dark">
+            <span class="ic" style="--c: var(--yellow)"><span class="ms" aria-hidden="true">notifications</span></span>
+            <h3>Reminders that help</h3>
+            <p>One at your start time, a nudge if you haven't started, and an evening check if the day is still open.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="pro" id="pro">
+      <div class="wrap">
+        <div class="sec-head">
+          <p class="eyebrow">Daybreak Pro</p>
+          <h2 class="h2">More room for your morning.</h2>
+          <p class="sec-lede">Pro adds the extras once your routine becomes a habit. Pay monthly, or once and keep it.</p>
+        </div>
+        <div class="pro-grid">
+          <ul class="pro-list">
+            <li class="glass-dark"><span class="ic" style="--c: var(--lime)"><span class="ms" aria-hidden="true">alarm</span></span><div><b>Wake-up alarm</b><p>Rings at your start time, even on silent, and opens straight into your routine.</p></div></li>
+            <li class="glass-dark"><span class="ic" style="--c: var(--mint)"><span class="ms" aria-hidden="true">trending_up</span></span><div><b>Reps that rise</b><p>Rep goals go up a little each week, at the same steady pace.</p></div></li>
+            <li class="glass-dark"><span class="ic" style="--c: var(--purple)"><span class="ms" aria-hidden="true">weekend</span></span><div><b>Rest days</b><p>One missed morning a week keeps your streak.</p></div></li>
+            <li class="glass-dark"><span class="ic" style="--c: var(--yellow)"><span class="ms" aria-hidden="true">calendar_month</span></span><div><b>A second routine</b><p>Weekends or evenings, each with its own stages and start time.</p></div></li>
+            <li class="glass-dark"><span class="ic" style="--c: var(--lime)"><span class="ms" aria-hidden="true">edit</span></span><div><b>Your own stages</b><p>Add anything the library doesn't have, and go past two extras.</p></div></li>
+            <li class="glass-dark"><span class="ic" style="--c: var(--mint)"><span class="ms" aria-hidden="true">history</span></span><div><b>Full history</b><p>Your consistency, each stage's record and every morning you've logged.</p></div></li>
+          </ul>
+          <div class="plans">
+            <div class="plan glass-dark">
+              <p class="plan-name">Monthly</p>
+              <p class="plan-price"><b>$2.99</b><span>a month</span></p>
+              <p class="plan-note">Renews monthly. Cancel anytime in Settings.</p>
+            </div>
+            <div class="plan best">
+              <p class="plan-name">Lifetime <span class="badge">Best value</span></p>
+              <p class="plan-price"><b>$19.99</b><span>once</span></p>
+              <p class="plan-note">Pay once and keep it. No subscription.</p>
+            </div>
+            <p class="fine">Both plans unlock the same features, plus five app icons in the Daybreak colors. Prices in US dollars; the App Store shows the price for your country.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="final" id="get" aria-labelledby="get-title">
+      <div class="wrap">
+        <ul class="promises">
+          <li class="glass-dark"><span class="ms" aria-hidden="true">lock</span>No ads, no tracking</li>
+          <li class="glass-dark"><span class="ms" aria-hidden="true">check</span>No account needed</li>
+          <li class="glass-dark"><span class="ms" aria-hidden="true">cloud</span>Your mornings stay in your iCloud</li>
+        </ul>
+        <div class="final-cta">
+          <div class="final-sun" aria-hidden="true"></div>
+          <h2 class="h2" id="get-title">Tomorrow starts at 6:45.</h2>
+          <p>Set up your routine tonight. Daybreak will have it ready when you wake.</p>
+          <span class="store store-light" data-store role="img" aria-label="Coming soon to the App Store">
+            <span class="ms" aria-hidden="true">phone_iphone</span>
+            <span class="store-text" aria-hidden="true"><small data-store-line>Coming soon to the</small><b>App Store</b></span>
+          </span>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-inner">
+    <a class="brand" href="#top" aria-label="Daybreak, back to top">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="4.3" fill="currentColor" stroke="none"/><path d="M12 2.6v2.3M12 19.1v2.3M2.6 12h2.3M19.1 12h2.3M5.35 5.35 7 7M17 17l1.65 1.65M5.35 18.65 7 17M17 7l1.65-1.65"/></svg>
+      </span>
+      <span>Daybreak</span>
+    </a>
+    <nav aria-label="Legal">
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="support.html">Support</a>
+      <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener">Terms of Use</a>
+    </nav>
+    <p class="copy">© 2026 Daybreak</p>
+  </div>
+</footer>
+
+<script>
+(() => {
+  // Paste the App Store link here at launch; every badge on the page becomes a download link.
+  const APP_STORE_URL = "";
+
+  if (APP_STORE_URL) {
+    document.querySelectorAll("[data-store]").forEach((badge) => {
+      const link = document.createElement("a");
+      link.className = badge.className;
+      link.href = APP_STORE_URL;
+      link.target = "_blank";
+      link.rel = "noopener";
+      link.innerHTML = badge.innerHTML;
+      link.querySelector("[data-store-line]").textContent = "Download on the";
+      link.setAttribute("aria-label", "Download Daybreak on the App Store");
+      badge.replaceWith(link);
+    });
+  }
+
+  // Five weeks of mornings, Monday first: a 12-morning streak up to today, a Wednesday.
+  const grid = document.querySelector("[data-grid]");
+  if (grid) {
+    const weeks = ["1101111", "1111101", "1110111", "1111111", "11T....".replace(/\./g, "s")];
+    grid.innerHTML = weeks.join("").split("").map((d) =>
+      `<i class="${d === "1" ? "on" : d === "T" ? "now" : d === "s" ? "soon" : ""}"></i>`).join("");
+  }
+
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const scene = document.querySelector("[data-scene]");
+  const phone = document.querySelector("[data-phone]");
+  const cards = Array.from(document.querySelectorAll("[data-depth]"));
+
+  // Give the hero phone real thickness: a stack of edge layers behind the front.
+  if (phone) {
+    const front = phone.querySelector(".pfront");
+    for (let i = 1; i <= 14; i++) {
+      const layer = document.createElement("span");
+      layer.className = "pedge";
+      layer.style.setProperty("--i", i);
+      phone.insertBefore(layer, front);
+    }
+    const back = document.createElement("span");
+    back.className = "pedge back";
+    phone.insertBefore(back, phone.firstChild);
+  }
+
+  // The liquid-glass sun: one WebGL pass, a glowing core inside a glass sphere.
+  const canvas = document.querySelector("[data-sun]");
+  const sun = canvas ? makeSun(canvas) : null;
+  if (!sun && scene) scene.classList.add("no-webgl");
+
+  function makeSun(el) {
+    let gl = null;
+    try { gl = el.getContext("webgl", { alpha: true, premultipliedAlpha: true, antialias: false, powerPreference: "low-power" }); } catch (e) { gl = null; }
+    if (!gl) return null;
+    const vs = `
+      attribute vec2 aPos;
+      varying vec2 vUv;
+      void main() { vUv = aPos * 0.5 + 0.5; gl_Position = vec4(aPos, 0.0, 1.0); }`;
+    const fs = `
+      #ifdef GL_FRAGMENT_PRECISION_HIGH
+      precision highp float;
+      #else
+      precision mediump float;
+      #endif
+      uniform vec2 uRes;
+      uniform float uTime;
+      uniform vec2 uMouse;
+      varying vec2 vUv;
+
+      float hash(vec2 p) { p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
+      float noise(vec2 p) {
+        vec2 i = floor(p); vec2 f = fract(p); vec2 u = f * f * (3.0 - 2.0 * f);
+        return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), u.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y);
+      }
+      float fbm(vec2 p) { float v = 0.0; float a = 0.5; for (int i = 0; i < 4; i++) { v += a * noise(p); p = p * 2.02 + 7.3; a *= 0.5; } return v; }
+
+      void main() {
+        vec2 px = vUv * uRes;
+        float R = min(uRes.x, uRes.y) * 0.34;
+        vec2 q = (px - uRes * 0.5) / R;
+        float d = length(q);
+        float aa = 1.5 / R;
+
+        // Warm light around the sun.
+        float haloA = exp(-max(d - 1.0, 0.0) * 3.3) * 0.56 * (1.0 - smoothstep(1.2, 1.44, d));
+        vec3 haloCol = mix(vec3(1.0, 0.93, 0.50), vec3(0.80, 0.96, 0.30), smoothstep(1.0, 1.8, d));
+
+        vec3 col = vec3(0.0);
+        float a = 0.0;
+        if (d < 1.0 + aa) {
+          float dd = min(d, 1.0);
+          vec3 N = normalize(vec3(q, sqrt(max(1.0 - dd * dd, 0.0))));
+          vec3 V = vec3(0.0, 0.0, 1.0);
+          float fres = pow(1.0 - N.z, 2.0);
+
+          // The liquid core, seen through the glass.
+          vec2 rq = q * (0.62 + 0.38 * N.z);
+          vec2 flow = vec2(uTime * 0.045, -uTime * 0.035);
+          float n = fbm(rq * 2.4 + flow + fbm(rq * 1.3 - flow) * 0.8);
+          float core = 1.0 - smoothstep(0.0, 1.0, length(rq - vec2(-0.10, 0.12)) * 1.05);
+          vec3 lime = vec3(0.784, 0.961, 0.235);
+          vec3 sunY = vec3(1.0, 0.894, 0.361);
+          vec3 hot = vec3(1.0, 0.985, 0.90);
+          vec3 body = mix(lime, sunY, smoothstep(0.05, 0.75, core));
+          body = mix(body, hot, pow(core, 2.6) * 0.85);
+          body *= 0.92 + 0.16 * n;
+
+          // Thin-film shimmer at the rim, in the app's purple and mint.
+          vec3 iri = 0.5 + 0.5 * cos(6.2831 * (vec3(0.0, 0.33, 0.67) + fres * 1.2 + N.x * 0.2 + uTime * 0.02));
+          vec3 tint = mix(vec3(0.725, 0.659, 1.0), vec3(0.561, 0.922, 0.824), 0.5 + 0.5 * N.y);
+          col = mix(body, mix(iri, tint, 0.6), smoothstep(0.25, 1.0, fres) * 0.75);
+
+          // A highlight that follows the cursor, and a soft reflection across the top.
+          vec3 L = normalize(vec3(uMouse.x * 0.8 - 0.45, -uMouse.y * 0.8 + 0.6, 0.75));
+          float nh = max(dot(N, normalize(L + V)), 0.0);
+          col += pow(nh, 140.0) * 1.2 + pow(nh, 16.0) * 0.16;
+          vec3 Rf = reflect(-V, N);
+          float band = smoothstep(0.45, 0.70, Rf.y) * (1.0 - smoothstep(0.80, 0.98, Rf.y))
+                     * smoothstep(-0.95, -0.2, Rf.x) * (1.0 - smoothstep(0.3, 0.8, Rf.x));
+          col += band * 0.35;
+
+          // Weight underneath.
+          col *= 1.0 - 0.22 * smoothstep(0.1, 1.0, -N.y) * smoothstep(0.1, 1.0, fres);
+
+          float edge = 1.0 - smoothstep(1.0 - aa, 1.0 + aa, d);
+          a = edge * mix(0.62, 1.0, smoothstep(0.0, 0.8, core));
+        }
+
+        float outA = a + haloA * (1.0 - a);
+        vec3 outC = min(col, vec3(1.0)) * a + haloCol * haloA * (1.0 - a);
+        gl_FragColor = vec4(outC, outA);
+      }`;
+    const compile = (type, src) => {
+      const s = gl.createShader(type);
+      gl.shaderSource(s, src);
+      gl.compileShader(s);
+      return gl.getShaderParameter(s, gl.COMPILE_STATUS) ? s : null;
+    };
+    const v = compile(gl.VERTEX_SHADER, vs);
+    const f = compile(gl.FRAGMENT_SHADER, fs);
+    if (!v || !f) return null;
+    const prog = gl.createProgram();
+    gl.attachShader(prog, v);
+    gl.attachShader(prog, f);
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return null;
+    gl.useProgram(prog);
+    const buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    const loc = gl.getAttribLocation(prog, "aPos");
+    gl.enableVertexAttribArray(loc);
+    gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    const uRes = gl.getUniformLocation(prog, "uRes");
+    const uTime = gl.getUniformLocation(prog, "uTime");
+    const uMouse = gl.getUniformLocation(prog, "uMouse");
+    let w = 1, h = 1;
+    const resize = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, window.innerWidth < 760 ? 1.5 : 2);
+      w = Math.max(1, Math.round(el.clientWidth * dpr));
+      h = Math.max(1, Math.round(el.clientHeight * dpr));
+      if (el.width !== w || el.height !== h) { el.width = w; el.height = h; }
+    };
+    resize();
+    return {
+      resize,
+      draw(t, mx, my) {
+        gl.viewport(0, 0, w, h);
+        gl.clearColor(0, 0, 0, 0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.uniform2f(uRes, w, h);
+        gl.uniform1f(uTime, t);
+        gl.uniform2f(uMouse, mx, my);
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+      }
+    };
+  }
+
+  // Pointer: the phone tilts toward it, the cards drift, the sun's highlight follows.
+  const pointer = { x: 0, y: 0, tx: 0, ty: 0 };
+  window.addEventListener("pointermove", (e) => {
+    if (e.pointerType === "touch") return;
+    pointer.tx = (e.clientX / window.innerWidth) * 2 - 1;
+    pointer.ty = (e.clientY / window.innerHeight) * 2 - 1;
+  }, { passive: true });
+
+  const pose = (mx, my) => {
+    if (!phone) return;
+    phone.style.setProperty("--ry", `${(-14 + mx * 10).toFixed(2)}deg`);
+    phone.style.setProperty("--rx", `${(7 - my * 7).toFixed(2)}deg`);
+    phone.style.setProperty("--glare", `${(-30 + mx * 34).toFixed(1)}%`);
+    cards.forEach((card) => {
+      const depth = Number(card.dataset.depth);
+      card.style.translate = `${(mx * depth).toFixed(1)}px ${(my * depth * 0.6).toFixed(1)}px`;
+    });
+  };
+
+  if (sun) {
+    const ro = new ResizeObserver(() => { sun.resize(); if (reduce) sun.draw(0, 0, 0); });
+    ro.observe(canvas);
+  }
+
+  if (reduce) {
+    pose(0, 0);
+    if (sun) sun.draw(0, 0, 0);
+    return;
+  }
+
+  let visible = true;
+  if (scene) new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; }).observe(scene);
+  const start = performance.now();
+  const frame = (now) => {
+    requestAnimationFrame(frame);
+    if (!visible) return;
+    const t = (now - start) / 1000;
+    pointer.x += (pointer.tx - pointer.x) * 0.05;
+    pointer.y += (pointer.ty - pointer.y) * 0.05;
+    const mx = pointer.x + Math.sin(t * 0.5) * 0.12;
+    const my = pointer.y + Math.cos(t * 0.4) * 0.1;
+    pose(mx, my);
+    if (sun) sun.draw(t, mx, my);
+  };
+  requestAnimationFrame(frame);
+})();
+</script>
+
+</html>

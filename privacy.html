@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Daybreak Privacy Policy</title>
+<meta name="description" content="How Daybreak handles your data: your mornings stay on your iPhone and in your own iCloud. No ads, no analytics, no tracking.">
+<link rel="icon" type="image/png" href="img/favicon.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Sora:wght@500..700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,1,0&icon_names=arrow_back,arrow_forward,cloud_sync,delete,favorite,group,help,lock,person,restore,shopping_bag,undo,visibility_off&display=block">
+<style>
+/* Layout: the landing page's morning sky above a readable sheet of policy text; night footer. */
+:root {
+  --ink: #0F1115;
+  --paper: #F3F4F1;
+  --muted: #5E6470;
+  --lime: #C8F53C;
+  --lime-ink: #3F5A08;
+  --yellow: #FFE45C;
+  --purple: #B9A8FF;
+  --purple-ink: #3B2D8A;
+  --mint: #8FEBD2;
+  --night: #0E0F12;
+  --night-text: #F3F4F1;
+  --night-muted: #A2A7B1;
+  --display: "Sora", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --body: "DM Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --gutter: max(16px, 4.5vw);
+  color-scheme: light;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: clip; }
+a { color: inherit; text-decoration: none; }
+p { margin: 0; }
+:focus-visible { outline: 3px solid var(--purple); outline-offset: 3px; border-radius: 10px; }
+.wrap { width: 100%; max-width: calc(1120px + 2 * var(--gutter)); margin-inline: auto; padding-inline: var(--gutter); }
+.ms { font-family: "Material Symbols Rounded"; font-weight: normal; font-style: normal; font-size: 1.25em; line-height: 1; display: inline-block; white-space: nowrap; font-feature-settings: "liga"; font-variation-settings: "FILL" 1, "wght" 500, "GRAD" 0, "opsz" 24; }
+.glass {
+  background: linear-gradient(135deg, rgba(255, 255, 255, .82), rgba(255, 255, 255, .5));
+  -webkit-backdrop-filter: blur(20px) saturate(170%); backdrop-filter: blur(20px) saturate(170%);
+  border: 1px solid rgba(255, 255, 255, .9);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .95), 0 1px 2px rgba(15, 17, 21, .05), 0 18px 40px -18px rgba(15, 17, 21, .2);
+}
+
+.nav-wrap { position: fixed; left: 0; right: 0; top: 0; z-index: 50; padding: calc(12px + env(safe-area-inset-top, 0px)) var(--gutter) 0; pointer-events: none; }
+.nav { pointer-events: auto; max-width: 1080px; margin: 0 auto; display: flex; align-items: center; gap: 16px; padding: 7px 7px 7px 14px; border-radius: 999px; }
+.brand { display: inline-flex; align-items: center; gap: 10px; font-family: var(--display); font-weight: 600; font-size: 18px; letter-spacing: -.01em; }
+.brand-mark { width: 30px; height: 30px; border-radius: 9px; flex: none; display: grid; place-items: center; background: var(--lime); color: var(--ink); box-shadow: inset 0 -2px 0 rgba(63, 90, 8, .18); }
+.nav-links { display: flex; gap: 2px; margin-left: auto; }
+.nav-links a { display: inline-flex; align-items: center; gap: 6px; min-height: 42px; padding: 0 16px; border-radius: 999px; font-weight: 600; font-size: 15px; color: var(--muted); }
+.nav-links a:hover, .nav-links a[aria-current="page"] { color: var(--ink); background: rgba(15, 17, 21, .05); }
+.nav-links .ms { font-size: 19px; }
+
+.doc-hero {
+  position: relative; overflow: hidden;
+  padding-block: calc(132px + env(safe-area-inset-top, 0px)) 48px;
+  background:
+    radial-gradient(45% 60% at 50% 0%, rgba(255, 228, 92, .40), transparent 72%),
+    radial-gradient(34% 50% at 10% 20%, rgba(200, 245, 60, .28), transparent 72%),
+    radial-gradient(34% 55% at 92% 30%, rgba(185, 168, 255, .32), transparent 72%),
+    var(--paper);
+}
+.eyebrow { margin-bottom: 12px; font-size: 13px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--lime-ink); }
+.doc-hero h1 { margin: 0; max-width: 16ch; font-family: var(--display); font-weight: 700; font-size: clamp(40px, 6.2vw, 76px); line-height: 1; letter-spacing: -.048em; text-wrap: balance; }
+.lead { margin-top: 18px; max-width: 38em; font-size: clamp(17px, 1.6vw, 20px); color: var(--muted); text-wrap: pretty; }
+.meta { margin-top: 14px; font-size: 14px; font-weight: 600; color: var(--muted); }
+
+.short { margin-top: 40px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; list-style: none; padding: 0; }
+.short li { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 14px; padding: 18px; border-radius: 22px; }
+.short .ic { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--c); color: var(--ink); }
+.short .ic .ms { font-size: 21px; }
+.short b { display: block; font-family: var(--display); font-weight: 600; font-size: 16.5px; letter-spacing: -.01em; }
+.short p { margin-top: 3px; font-size: 14.5px; line-height: 1.5; color: var(--muted); }
+
+.doc { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: clamp(28px, 5vw, 72px); padding-block: 24px clamp(80px, 9vw, 120px); }
+.toc { position: sticky; top: 104px; align-self: start; font-size: 14.5px; }
+.toc p { margin-bottom: 10px; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.toc a { display: block; padding: 6px 10px; border-radius: 10px; color: var(--muted); }
+.toc a:hover { color: var(--ink); background: rgba(15, 17, 21, .05); }
+.prose { max-width: 68ch; }
+.prose section { scroll-margin-top: 96px; padding-top: 8px; }
+.prose section + section { margin-top: 40px; }
+.prose h2 { margin: 0 0 12px; font-family: var(--display); font-weight: 600; font-size: clamp(22px, 2.4vw, 27px); line-height: 1.2; letter-spacing: -.022em; }
+.prose p + p, .prose p + ul, .prose ul + p { margin-top: 14px; }
+.prose ul { margin: 0; padding-left: 1.2em; }
+.prose li { margin: 8px 0; padding-left: 4px; }
+.prose li::marker { color: #7FA814; }
+.prose strong { font-weight: 600; }
+.prose a { color: var(--purple-ink); text-decoration: underline; text-decoration-color: rgba(59, 45, 138, .35); text-underline-offset: 3px; }
+.prose a:hover { text-decoration-color: var(--purple-ink); }
+.callout { margin-top: 16px; padding: 18px 20px; border-radius: 20px; background: rgba(200, 245, 60, .28); border: 1px solid rgba(63, 90, 8, .12); }
+
+.foot { background: var(--night); color: var(--night-muted); }
+.foot-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 28px; padding-block: 28px; }
+.foot .brand { color: var(--night-text); font-size: 16px; }
+.foot .brand-mark { width: 26px; height: 26px; border-radius: 8px; }
+.foot nav { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 14.5px; }
+.foot nav a:hover, .foot nav a[aria-current="page"] { color: var(--night-text); }
+.copy { font-size: 14px; }
+
+@media (max-width: 900px) {
+  .short { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .doc { grid-template-columns: minmax(0, 1fr); }
+  .toc { display: none; }
+}
+@media (max-width: 600px) {
+  .nav-links .label { display: none; }
+  .short { grid-template-columns: minmax(0, 1fr); }
+  .foot-inner { flex-direction: column; align-items: flex-start; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+
+<header class="nav-wrap">
+  <nav class="nav glass" aria-label="Main">
+    <a class="brand" href="./" aria-label="Daybreak home">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="4.3" fill="currentColor" stroke="none"/><path d="M12 2.6v2.3M12 19.1v2.3M2.6 12h2.3M19.1 12h2.3M5.35 5.35 7 7M17 17l1.65 1.65M5.35 18.65 7 17M17 7l1.65-1.65"/></svg>
+      </span>
+      <span>Daybreak</span>
+    </a>
+    <div class="nav-links">
+      <a href="./"><span class="ms" aria-hidden="true">arrow_back</span><span class="label">Home</span></a>
+      <a href="support.html"><span class="ms" aria-hidden="true">help</span><span class="label">Support</span></a>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <section class="doc-hero">
+    <div class="wrap">
+      <p class="eyebrow">Privacy Policy</p>
+      <h1>Your mornings stay yours.</h1>
+      <p class="lead">Daybreak is a morning-routine app. It has no server of its own and no analytics, ads or tracking. Your routine and your mornings stay on your iPhone and in your own iCloud, where we can't see them.</p>
+      <p class="meta">Last updated: September 30, 2026</p>
+
+      <ul class="short" aria-label="The short version">
+        <li class="glass"><span class="ic" style="--c: var(--lime)"><span class="ms" aria-hidden="true">lock</span></span><div><b>Your mornings stay yours</b><p>Your routine and history live on your iPhone and in your private iCloud database. We have no copy and no way to read it.</p></div></li>
+        <li class="glass"><span class="ic" style="--c: var(--purple)"><span class="ms" aria-hidden="true">visibility_off</span></span><div><b>No ads, no analytics, no tracking</b><p>No third-party code watches what you do, and nothing tracks you across apps or websites.</p></div></li>
+        <li class="glass"><span class="ic" style="--c: var(--mint)"><span class="ms" aria-hidden="true">favorite</span></span><div><b>Apple Health is write-only</b><p>If you turn it on, Daybreak adds your morning workout and mindful minutes. It never reads anything from Health.</p></div></li>
+        <li class="glass"><span class="ic" style="--c: var(--yellow)"><span class="ms" aria-hidden="true">person</span></span><div><b>Signing in is optional</b><p>Apple or Google sign-in stays on your iPhone. An email login is kept by our sign-in service, Google Firebase, so your password can be checked.</p></div></li>
+        <li class="glass"><span class="ic" style="--c: var(--lime)"><span class="ms" aria-hidden="true">shopping_bag</span></span><div><b>Apple handles purchases</b><p>Daybreak Pro is bought through the App Store. We never see your payment details.</p></div></li>
+        <li class="glass"><span class="ic" style="--c: var(--purple)"><span class="ms" aria-hidden="true">delete</span></span><div><b>Delete it all in one place</b><p>Settings → Delete account removes your data from your iPhone and your iCloud.</p></div></li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="wrap doc">
+    <nav class="toc" aria-label="On this page">
+      <p>On this page</p>
+      <ol>
+        <li><a href="#who">Who we are</a></li>
+        <li><a href="#keeps">What Daybreak keeps</a></li>
+        <li><a href="#signing-in">Signing in</a></li>
+        <li><a href="#health">Apple Health</a></li>
+        <li><a href="#reminders">Reminders and alarms</a></li>
+        <li><a href="#pro">Daybreak Pro</a></li>
+        <li><a href="#never">What Daybreak never does</a></li>
+        <li><a href="#apple-reports">Reports from Apple</a></li>
+        <li><a href="#children">Children</a></li>
+        <li><a href="#choices">Your choices</a></li>
+        <li><a href="#retention">How long data is kept</a></li>
+        <li><a href="#changes">Changes</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ol>
+    </nav>
+
+    <article class="prose">
+      <section id="who">
+        <h2>Who we are</h2>
+        <p>Daybreak is published on the App Store by Jay Goyal ("we", "us"), who is listed as its seller. For questions about this policy, see <a href="#contact">Contact</a>.</p>
+      </section>
+
+      <section id="keeps">
+        <h2>What Daybreak keeps, and where</h2>
+        <p><strong>Your routine and your mornings.</strong> The stages you choose, your start time and days, your reminder settings, and a record of each morning you run (when it started, which stages you finished or skipped, and your time or reps for each). This is kept:</p>
+        <ul>
+          <li>on your iPhone; and</li>
+          <li>if your iPhone is signed in to iCloud, in your private iCloud database, so it syncs between your devices. That database belongs to your Apple Account. Apple stores it, and we have no access to it.</li>
+        </ul>
+        <p>Daybreak also keeps a backup copy of your routine and history on your iPhone, so a problem with iCloud can't lose your mornings. It never leaves the device.</p>
+        <p><strong>Your settings.</strong> Sounds, haptics, reminders and similar choices are stored on your iPhone only.</p>
+        <p><strong>Widgets and the Live Activity.</strong> Daybreak shares a small summary (your streak, this week, and today's stages) with its own widgets and Live Activity, inside your iPhone. It isn't sent anywhere.</p>
+      </section>
+
+      <section id="signing-in">
+        <h2>Signing in (optional)</h2>
+        <p>You can use all of Daybreak without an account. If you choose to sign in:</p>
+        <ul>
+          <li><strong>Sign in with Apple</strong> gives Daybreak an identifier for your account and, the first time, your name and an email address (which can be a private relay address if you choose to hide yours).</li>
+          <li><strong>Sign in with Google</strong> gives Daybreak an identifier for your account, your name and your email address. The sign-in happens on Google's own page, and Google handles it under the <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a>.</li>
+          <li><strong>Sign in with email</strong> creates a login with Google Firebase Authentication, the service Daybreak uses to check your password. It keeps your email address, a securely hashed copy of your password and an account identifier. Daybreak never stores your password, and the name you give stays on your iPhone. Firebase handles this under <a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener">Firebase's privacy terms</a>.</li>
+        </ul>
+        <p>Daybreak uses this only to show who is signed in. Apart from an email login held by Firebase, it is stored on your iPhone only; it isn't uploaded to us or to iCloud. The sign-in tokens Apple and Google provide are used once to read who signed in, and then thrown away. Signing out removes it from your iPhone and leaves your mornings untouched.</p>
+      </section>
+
+      <section id="health">
+        <h2>Apple Health (optional)</h2>
+        <p>If you turn on Apple Health in Daybreak's Settings and allow it, Daybreak adds two kinds of entries to Health when you finish a morning: your exercise stage as a workout, and your mindfulness stage as mindful minutes.</p>
+        <p>Daybreak only writes. It never asks to read your health data, it never reads it, and it never stores anything from Apple Health in iCloud. The entries belong to you in the Health app, and Daybreak never uses them for advertising or marketing.</p>
+      </section>
+
+      <section id="reminders">
+        <h2>Reminders, alarms and notifications</h2>
+        <p>Reminders and nudges are scheduled on your iPhone, not sent from a server. With Daybreak Pro on iOS 26 or later, the wake-up alarm is scheduled with the system's alarm service on your iPhone in the same way.</p>
+      </section>
+
+      <section id="pro">
+        <h2>Daybreak Pro and purchases</h2>
+        <p>Daybreak Pro is an in-app purchase sold through the App Store. Apple handles the payment, and we never see your card, your billing details or your Apple Account's name or email. Your iPhone tells Daybreak whether your Apple Account owns Pro, and Daybreak remembers that yes or no on your iPhone so Pro works offline. Pro belongs to your Apple Account, not to a Daybreak sign-in.</p>
+        <p>Apple gives us sales reports that show how many copies of Pro sold in each country and what we were paid. They don't identify who bought.</p>
+      </section>
+
+      <section id="never">
+        <h2>What Daybreak never does</h2>
+        <ul>
+          <li>No analytics or advertising code, and no third-party SDKs.</li>
+          <li>No tracking across other companies' apps or websites, and no advertising identifier.</li>
+          <li>No selling or sharing of your data. We don't have it to sell.</li>
+          <li>No servers of our own. The only services the app talks to are Apple's (iCloud and the App Store) and, only if you choose Google or email sign-in, Google's (Google sign-in and Firebase Authentication).</li>
+        </ul>
+      </section>
+
+      <section id="apple-reports">
+        <h2>Crash reports and statistics from Apple</h2>
+        <p>If you have chosen to share analytics with app developers (iPhone Settings → Privacy &amp; Security → Analytics &amp; Improvements → Share With App Developers), Apple may send us crash reports and summary statistics about how the app is used. Apple strips out anything that identifies you before we see them. You can turn this off in the same place at any time.</p>
+      </section>
+
+      <section id="children">
+        <h2>Children</h2>
+        <p>Daybreak doesn't collect personal information from anyone, children included, except an email login if someone chooses email sign-in. Signing in is optional, and Apple or Google sign-in stays on the device.</p>
+      </section>
+
+      <section id="choices">
+        <h2>Your choices, and deleting your data</h2>
+        <ul>
+          <li><strong>Delete everything:</strong> Daybreak → Settings → <strong>Delete account</strong>. This deletes your routine and every logged morning from your iPhone and from your iCloud, the on-device backup, the widget summary, your sign-in, your reminders and your settings.</li>
+          <li><strong>Apple Health entries</strong> stay in the Health app, because they are your health data rather than Daybreak's. You can delete them in the Health app.</li>
+          <li><strong>Sign in with Apple:</strong> to remove Daybreak from your Apple Account, go to iPhone Settings → your name → Sign-In &amp; Security → Sign in with Apple.</li>
+          <li><strong>Google:</strong> remove Daybreak from the apps connected to your Google account at <a href="https://myaccount.google.com/connections" target="_blank" rel="noopener">myaccount.google.com/connections</a>.</li>
+          <li><strong>Email sign-in:</strong> Delete account also deletes your email login from Firebase. It asks for your password first.</li>
+          <li><strong>iCloud:</strong> you can stop Daybreak syncing, or delete what it keeps in iCloud, from your iCloud settings on your iPhone.</li>
+          <li><strong>Daybreak Pro</strong> stays with your Apple Account after you delete your data. Restore Purchases brings it back.</li>
+        </ul>
+        <p>Because your data is on your own devices and in your own iCloud, you can see, change and delete it yourself, whatever privacy law applies where you live.</p>
+      </section>
+
+      <section id="retention">
+        <h2>How long data is kept</h2>
+        <p>Until you delete it. Your mornings stay on your iPhone and in your iCloud until you delete them in Daybreak, delete the app, or remove Daybreak's data from iCloud. We hold no copy, so there is nothing for us to keep. An email login is kept by Firebase until you delete your account.</p>
+      </section>
+
+      <section id="changes">
+        <h2>Changes to this policy</h2>
+        <p>If what Daybreak does with your data changes, we'll update this policy and the date at the top before the app update that makes the change. The app always shows the current version under Privacy Policy.</p>
+      </section>
+
+      <section id="contact">
+        <h2>Contact</h2>
+        <p>Questions about this policy, or help with your data: see <a href="support.html">Daybreak Support</a>. Everything above can be done yourself in the app, and Apple handles anything to do with payments.</p>
+        <p class="callout">A contact email for Daybreak is coming soon and will be listed here.</p>
+      </section>
+    </article>
+  </div>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-inner">
+    <a class="brand" href="./" aria-label="Daybreak home">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="4.3" fill="currentColor" stroke="none"/><path d="M12 2.6v2.3M12 19.1v2.3M2.6 12h2.3M19.1 12h2.3M5.35 5.35 7 7M17 17l1.65 1.65M5.35 18.65 7 17M17 7l1.65-1.65"/></svg>
+      </span>
+      <span>Daybreak</span>
+    </a>
+    <nav aria-label="Legal">
+      <a href="privacy.html" aria-current="page">Privacy Policy</a>
+      <a href="support.html">Support</a>
+      <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener">Terms of Use</a>
+    </nav>
+    <p class="copy">© 2026 Daybreak</p>
+  </div>
+</footer>
+
+</html>
