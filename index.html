@@ -463,14 +463,15 @@ a.store:hover::after { translate: 120% 0; }
 @keyframes r-in-down { from { translate: 0 -100%; opacity: 0; } }
 @keyframes r-out-up { to { translate: 0 -100%; opacity: 0; } }
 @keyframes r-out-down { to { translate: 0 100%; opacity: 0; } }
-.tl-phone { position: relative; z-index: 1; width: var(--pw); rotate: -2deg; }
+.tl-phone { position: relative; z-index: 1; width: var(--pw); perspective: 1400px; }
+.tl-phone .phone3d { --rx: 5deg; --ry: -12deg; --rz: -2deg; }
 .tl-phone .pfront { box-shadow: 0 50px 110px -34px color-mix(in srgb, var(--tl-stage) 60%, transparent), 0 30px 60px -26px rgba(0, 0, 0, .7); }
 
 .tl-list { list-style: none; margin: 0; padding: 0 0 18vh; }
 .tl-item {
   position: relative; z-index: 1;
   display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 22px; align-items: center;
-  min-height: clamp(250px, 48vh, 430px);
+  min-height: clamp(220px, 40vh, 360px);
   cursor: pointer;
 }
 .tl-marker {
@@ -511,10 +512,17 @@ a.store:hover::after { translate: 120% 0; }
 }
 .tl-item.is-active .tl-body h3 { color: var(--c); }
 .tl-text { margin-top: 10px; font-size: 16.5px; color: var(--night-muted); text-wrap: pretty; }
+.tl-chips { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
 .tl-chip {
-  display: inline-flex; margin-top: 14px; padding: 6px 12px; border-radius: 999px;
-  font-size: 13.5px; font-weight: 600; font-variant-numeric: tabular-nums;
+  display: inline-flex; padding: 6px 12px; border-radius: 999px;
+  font-size: 13.5px; font-weight: 600;
   background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .08);
+  transition: background-color .45s ease, border-color .45s ease;
+}
+/* The first chip is the stage on the phone. */
+.tl-item.is-active .tl-chip:first-child {
+  background: color-mix(in srgb, var(--c) 16%, transparent);
+  border-color: color-mix(in srgb, var(--c) 50%, transparent);
 }
 .tl-rail {
   position: absolute; left: 25px; top: 0; z-index: 0;
@@ -736,7 +744,7 @@ a.store:hover::after { translate: 120% 0; }
   .tl-clock small { font-size: 11px; }
   .tl-glow { width: 120%; }
   .tl-list { padding-bottom: 6vh; }
-  .tl-item { grid-template-columns: 44px minmax(0, 1fr); gap: 16px; min-height: 48vh; }
+  .tl-item { grid-template-columns: 44px minmax(0, 1fr); gap: 16px; min-height: 40vh; }
   .tl-marker { width: 44px; height: 44px; border-radius: 14px; }
   .tl-marker .ms { font-size: 21px; }
   .tl-rail { left: 21px; }
@@ -816,7 +824,7 @@ a.store:hover::after { translate: 120% 0; }
       <div class="horizon" aria-hidden="true"></div>
 
       <div class="phone-wrap phone" data-hero-phone>
-        <div class="phone3d" data-phone>
+        <div class="phone3d" data-phone data-phone3d>
           <div class="pfront">
             <div class="pbezel">
               <div class="pscreen" data-hero-screens>
@@ -887,6 +895,7 @@ a.store:hover::after { translate: 120% 0; }
               <span class="tl-glow" aria-hidden="true"></span>
               <p class="tl-clock glass-dark" aria-hidden="true"><span class="roll" data-clock><span class="r-cur">6:45</span></span><small>AM</small></p>
               <div class="tl-phone phone">
+                <div class="phone3d" data-phone3d>
                 <div class="pfront">
                   <div class="pbezel">
                     <div class="pscreen" data-tl-screens>
@@ -898,6 +907,8 @@ a.store:hover::after { translate: 120% 0; }
                       <span class="island" aria-hidden="true"></span>
                     </div>
                   </div>
+                  <span class="glare" aria-hidden="true"></span>
+                </div>
                 </div>
               </div>
             </div>
@@ -910,32 +921,48 @@ a.store:hover::after { translate: 120% 0; }
                 <span class="tl-marker" aria-hidden="true"><span class="ms ms-stage">water_drop</span><span class="ms ms-done">check</span></span>
                 <div class="tl-body">
                   <h3>Fuel</h3>
-                  <p class="tl-text">Start with a glass of water, before the coffee. There's no timer on this one, so tap Done when the glass is empty.</p>
-                  <p class="tl-chip">About 1 min</p>
+                  <p class="tl-text">A drink or a bite to start the day. There's no timer on fuel, so tap Done when you've finished.</p>
+                  <ul class="tl-chips">
+                    <li class="tl-chip">Glass of water</li>
+                    <li class="tl-chip">Black coffee</li>
+                    <li class="tl-chip">Smoothie</li>
+                  </ul>
                 </div>
               </li>
               <li class="tl-item" style="--c: var(--lime)" data-color="#C8F53C" data-time="6:50">
                 <span class="tl-marker" aria-hidden="true"><span class="ms ms-stage">directions_run</span><span class="ms ms-done">check</span></span>
                 <div class="tl-body">
                   <h3>Exercise</h3>
-                  <p class="tl-text">Pushups, paced by a dot that moves once every 3 seconds. At 20 reps, the stage ticks itself off.</p>
-                  <p class="tl-chip">20 reps in 1 min</p>
+                  <p class="tl-text">A few minutes of movement to wake the body up. A dot paces every rep, and the stage ticks itself off at your goal.</p>
+                  <ul class="tl-chips">
+                    <li class="tl-chip">Pushups</li>
+                    <li class="tl-chip">Squats</li>
+                    <li class="tl-chip">Jumping jacks</li>
+                  </ul>
                 </div>
               </li>
               <li class="tl-item" style="--c: var(--purple)" data-color="#B9A8FF" data-time="6:55">
                 <span class="tl-marker" aria-hidden="true"><span class="ms ms-stage">air</span><span class="ms ms-done">check</span></span>
                 <div class="tl-body">
                   <h3>Mindfulness</h3>
-                  <p class="tl-text">Box breathing, following the dot around the box. In for 4, hold for 4, out for 4, hold for 4.</p>
-                  <p class="tl-chip">2 min</p>
+                  <p class="tl-text">A calm minute or two before the day gets busy. Breathe with the dot, or sit with a timer that keeps count for you.</p>
+                  <ul class="tl-chips">
+                    <li class="tl-chip">Box breathing</li>
+                    <li class="tl-chip">Meditation</li>
+                    <li class="tl-chip">Body scan</li>
+                  </ul>
                 </div>
               </li>
               <li class="tl-item" style="--c: var(--mint)" data-color="#8FEBD2" data-time="7:00">
                 <span class="tl-marker" aria-hidden="true"><span class="ms ms-stage">bed</span><span class="ms ms-done">check</span></span>
                 <div class="tl-body">
                   <h3>Extra</h3>
-                  <p class="tl-text">Make the bed against a countdown you can read from across the room. When the time is up, an alarm rings, even on silent.</p>
-                  <p class="tl-chip">1 min 30 s</p>
+                  <p class="tl-text">Any other habit you want in your morning, each with a countdown you can read from across the room. When the time is up, an alarm rings.</p>
+                  <ul class="tl-chips">
+                    <li class="tl-chip">Make the bed</li>
+                    <li class="tl-chip">Cold shower</li>
+                    <li class="tl-chip">Sunlight</li>
+                  </ul>
                 </div>
               </li>
               <li class="tl-item" style="--c: var(--lime)" data-color="#C8F53C" data-time="7:05">
@@ -943,7 +970,9 @@ a.store:hover::after { translate: 120% 0; }
                 <div class="tl-body">
                   <h3>Done</h3>
                   <p class="tl-text">Every stage is done. Your streak goes up by one, and tomorrow's reminder is already set.</p>
-                  <p class="tl-chip">Streak +1</p>
+                  <ul class="tl-chips">
+                    <li class="tl-chip">Streak +1</li>
+                  </ul>
                 </div>
               </li>
             </ol>
@@ -1182,19 +1211,19 @@ a.store:hover::after { translate: 120% 0; }
   const sunWrap = document.querySelector(".sun-wrap");
   const cards = Array.from(document.querySelectorAll("[data-depth]"));
 
-  // Give the hero phone real thickness: a stack of edge layers behind the front.
-  if (phone) {
-    const front = phone.querySelector(".pfront");
+  // Give the 3D phones real thickness: a stack of edge layers behind the front.
+  document.querySelectorAll("[data-phone3d]").forEach((body) => {
+    const front = body.querySelector(".pfront");
     for (let i = 1; i <= 14; i++) {
       const layer = document.createElement("span");
       layer.className = "pedge";
       layer.style.setProperty("--i", i);
-      phone.insertBefore(layer, front);
+      body.insertBefore(layer, front);
     }
     const back = document.createElement("span");
     back.className = "pedge back";
-    phone.insertBefore(back, phone.firstChild);
-  }
+    body.insertBefore(back, body.firstChild);
+  });
 
   // The liquid-glass sun: one WebGL pass, a glowing core inside a glass sphere,
   // tinted by the stage on the phone.
@@ -1404,6 +1433,13 @@ a.store:hover::after { translate: 120% 0; }
     let target = 0;
     let shown = 0;
     let active = 0;
+    const phone3d = timeline.querySelector(".tl-phone [data-phone3d]");
+    let lastY = window.scrollY;
+    let speed = 0;
+    let inView = true;
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(([entry]) => { inView = entry.isIntersecting; }).observe(timeline);
+    }
     const probeY = () => window.innerHeight * (narrow.matches ? 0.72 : 0.52);
 
     const layout = () => {
@@ -1460,6 +1496,25 @@ a.store:hover::after { translate: 120% 0; }
         if (Math.abs(target - shown) < 0.1) shown = target;
         dot.style.transform = `translateY(${shown.toFixed(1)}px)`;
         fill.style.height = `${shown.toFixed(1)}px`;
+
+        // The pinned phone turns and sways in place as the morning scrolls
+        // past it, and leans a little with the speed of the scroll.
+        const y = window.scrollY;
+        if (dt > 0) speed += ((y - lastY) / dt - speed) * (1 - Math.exp(-dt * 6));
+        lastY = y;
+        if (!phone3d || reduce || !inView) return;
+        const p = shown / railLen;
+        const k = narrow.matches ? 0.6 : 1;
+        const lean = clamp(speed / 1400, -1, 1);
+        const ry = (-16 + 30 * p + Math.sin(p * Math.PI * 4) * 6) * k;
+        const rx = (6 - lean * 9) * k;
+        const rz = (-2 + Math.sin(p * Math.PI * 2) * 3 + lean * 2) * k;
+        const sy = (Math.sin(p * Math.PI * 4) * 10 - lean * 8) * k;
+        phone3d.style.setProperty("--ry", `${ry.toFixed(2)}deg`);
+        phone3d.style.setProperty("--rx", `${rx.toFixed(2)}deg`);
+        phone3d.style.setProperty("--rz", `${rz.toFixed(2)}deg`);
+        phone3d.style.setProperty("--sy", `${sy.toFixed(1)}px`);
+        phone3d.style.setProperty("--glare", `${(-30 + ry * 2).toFixed(1)}%`);
       }
     };
     layout();
