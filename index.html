@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Sora:wght@500..700&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,1,0&icon_names=air,alarm,arrow_downward,arrow_forward,bed,calendar_month,check,cloud,directions_run,edit,favorite,history,local_fire_department,lock,notifications,pause,phone_iphone,play_arrow,trending_up,water_drop,weekend&display=block">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,1,0&icon_names=air,arrow_downward,arrow_forward,bed,check,cloud,directions_run,favorite,local_fire_department,lock,notifications,pause,phone_iphone,play_arrow,water_drop&display=block">
 <style>
 /* Layout: a sunrise. A light sky where a liquid-glass sun, colored by the stage on
    screen, rises over a dark horizon behind a 3D phone; below the horizon it is night,
@@ -46,7 +46,7 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; background: var(--paper); }
 body {
   margin: 0;
   background: var(--paper);
@@ -398,7 +398,7 @@ a.store:hover::after { translate: 120% 0; }
 .play .ms { font-size: 20px; }
 
 /* Night: everything below the horizon */
-.night { position: relative; background: var(--night); color: var(--night-text); overflow-x: clip; }
+.night { position: relative; background: var(--night); color: var(--night-text); overflow: clip; }
 .night::before {
   content: ""; position: absolute; inset: 0; pointer-events: none;
   -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 320px);
@@ -504,11 +504,13 @@ a.store:hover::after { translate: 120% 0; }
 .tl-item.is-past .tl-body { opacity: .56; }
 .tl-item.is-active .tl-body { opacity: 1; translate: 6px 0; }
 .tl-item:hover .tl-body { opacity: 1; }
-.tl-time { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 14px; }
-.tl-time time { font-family: var(--display); font-weight: 700; font-size: clamp(30px, 3.4vw, 44px); letter-spacing: -.035em; line-height: 1; font-variant-numeric: tabular-nums; }
-.tl-cat { font-size: 12.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--c); }
-.tl-body h3 { margin: 10px 0 0; font-family: var(--display); font-weight: 600; font-size: clamp(22px, 2.2vw, 28px); letter-spacing: -.02em; line-height: 1.2; }
-.tl-text { margin-top: 8px; font-size: 16.5px; color: var(--night-muted); text-wrap: pretty; }
+.tl-body h3 {
+  margin: 0; font-family: var(--display); font-weight: 700;
+  font-size: clamp(30px, 3.4vw, 44px); letter-spacing: -.035em; line-height: 1.05;
+  transition: color .5s ease;
+}
+.tl-item.is-active .tl-body h3 { color: var(--c); }
+.tl-text { margin-top: 10px; font-size: 16.5px; color: var(--night-muted); text-wrap: pretty; }
 .tl-chip {
   display: inline-flex; margin-top: 14px; padding: 6px 12px; border-radius: 999px;
   font-size: 13.5px; font-weight: 600; font-variant-numeric: tabular-nums;
@@ -623,28 +625,6 @@ a.store:hover::after { translate: 120% 0; }
 .live .ico .ms { font-size: 17px; }
 .live em { font-style: normal; color: var(--lime); font-variant-numeric: tabular-nums; }
 
-/* Pro */
-.pro { padding-bottom: clamp(90px, 10vw, 140px); }
-.pro-grid { margin-top: 52px; display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: clamp(20px, 3vw, 40px); align-items: start; }
-.pro-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-.pro-list li { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 14px; padding: 18px; border-radius: 22px; }
-.pro-list .ic { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--c); color: var(--ink); transition: transform .5s var(--ease); }
-.pro-list li:hover .ic { transform: rotate(-8deg) scale(1.08); }
-.pro-list .ic .ms { font-size: 21px; }
-.pro-list b { font-family: var(--display); font-weight: 600; font-size: 17px; letter-spacing: -.01em; }
-.pro-list p { margin-top: 3px; font-size: 14.5px; color: var(--night-muted); }
-.plans { display: grid; gap: 12px; position: sticky; top: 104px; }
-.plan { border-radius: 26px; padding: 24px 24px 22px; }
-.plan-name { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; color: var(--night-muted); }
-.plan-price { margin-top: 12px; display: flex; align-items: baseline; gap: 8px; }
-.plan-price b { font-family: var(--display); font-weight: 700; font-size: 48px; letter-spacing: -.035em; line-height: 1; font-variant-numeric: tabular-nums; }
-.plan-price span { font-size: 16px; font-weight: 500; color: var(--night-muted); }
-.plan-note { margin-top: 12px; font-size: 14.5px; color: var(--night-muted); }
-.plan.best { background: var(--lime); color: var(--ink); box-shadow: 0 34px 80px -34px rgba(200, 245, 60, .65); }
-.plan.best .plan-name, .plan.best .plan-note, .plan.best .plan-price span { color: #34410F; }
-.badge { background: var(--ink); color: var(--lime); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 4px 9px; border-radius: 999px; }
-.fine { margin: 4px 6px 0; font-size: 13px; color: var(--night-muted); }
-
 /* The last call */
 .final { padding-block: clamp(10px, 2vw, 30px) clamp(110px, 12vw, 160px); text-align: center; }
 .promises { list-style: none; margin: 0 auto; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
@@ -683,7 +663,7 @@ a.store:hover::after { translate: 120% 0; }
   background: radial-gradient(380px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, .09), transparent 46%);
   opacity: 0; transition: opacity .35s ease;
 }
-.t-lime[data-tilt]::after, .plan.best[data-tilt]::after {
+.t-lime[data-tilt]::after {
   background: radial-gradient(380px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, .38), transparent 46%);
 }
 [data-tilt].is-hover::after { opacity: 1; }
@@ -713,9 +693,6 @@ a.store:hover::after { translate: 120% 0; }
   .t-wide { grid-column: span 2; }
   .t-small { grid-column: span 1; }
   .t-small:last-child { grid-column: span 2; }
-  .pro-grid { grid-template-columns: minmax(0, 1fr); }
-  .plans { position: static; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .plans .fine { grid-column: 1 / -1; }
 }
 @media (max-width: 860px) {
   .lime-panel { grid-template-columns: minmax(0, 1fr); }
@@ -745,17 +722,18 @@ a.store:hover::after { translate: 120% 0; }
   /* The phone pins across the top while the morning scrolls beneath it */
   .tl { display: block; margin-top: 24px; }
   .tl-stage {
-    --pw: min(42vw, calc((50vh - 92px) / 2.06));
+    --pw: min(40vw, calc((52vh - 128px) / 2.06));
     position: sticky; top: calc(64px + env(safe-area-inset-top, 0px)); z-index: 3;
     margin-inline: calc(var(--gutter) * -1);
-    padding: 22px var(--gutter) 30px;
+    padding: 14px var(--gutter) 30px;
     background: linear-gradient(180deg, var(--night) calc(100% - 26px), rgba(14, 15, 18, 0));
   }
   @supports (height: 100svh) {
-    .tl-stage { --pw: min(42vw, calc((50svh - 92px) / 2.06)); }
+    .tl-stage { --pw: min(40vw, calc((52svh - 128px) / 2.06)); }
   }
-  .tl-sticky { position: relative; top: auto; }
-  .tl-clock { display: none; }
+  .tl-sticky { position: relative; top: auto; gap: 10px; }
+  .tl-clock { font-size: 17px; padding: 6px 13px; }
+  .tl-clock small { font-size: 11px; }
   .tl-glow { width: 120%; }
   .tl-list { padding-bottom: 6vh; }
   .tl-item { grid-template-columns: 44px minmax(0, 1fr); gap: 16px; min-height: 48vh; }
@@ -768,8 +746,6 @@ a.store:hover::after { translate: 120% 0; }
   .t-wide, .t-small, .t-small:last-child { grid-column: auto; }
   .streak-art { grid-template-columns: minmax(0, 1fr); }
   .grid5 { justify-content: start; }
-  .pro-list { grid-template-columns: minmax(0, 1fr); }
-  .plans { grid-template-columns: minmax(0, 1fr); }
   .foot-inner { flex-direction: column; align-items: flex-start; }
 }
 @media (max-width: 560px) {
@@ -802,7 +778,6 @@ a.store:hover::after { translate: 120% 0; }
     <ul class="nav-links">
       <li><a href="#stages">How it works</a></li>
       <li><a href="#features">Features</a></li>
-      <li><a href="#pro">Pro</a></li>
       <li><a href="support">Support</a></li>
     </ul>
     <a class="btn btn-ink" href="#get">Get the app <span class="ms" aria-hidden="true">arrow_forward</span></a>
@@ -903,7 +878,7 @@ a.store:hover::after { translate: 120% 0; }
         <div class="sec-head">
           <p class="eyebrow reveal">How a morning runs</p>
           <h2 class="h2 reveal-text" id="tl-title">One morning, one stage at a time.</h2>
-          <p class="sec-lede reveal reveal-2">A real morning in Daybreak, from 6:45 to 6:52. Each stage fills your screen with its own color, so you always know where you are.</p>
+          <p class="sec-lede reveal reveal-2">A morning in Daybreak, starting at 6:45. Each stage fills your screen with its own color, so you always know where you are.</p>
         </div>
 
         <div class="tl">
@@ -915,11 +890,11 @@ a.store:hover::after { translate: 120% 0; }
                 <div class="pfront">
                   <div class="pbezel">
                     <div class="pscreen" data-tl-screens>
-                      <img class="scr is-on" src="img/stage-water.jpg" width="640" height="1385" loading="lazy" alt="6:45, a glass of water on a yellow page: tap Done when the glass is empty.">
-                      <img class="scr" src="img/stage-pushups.jpg" width="640" height="1385" loading="lazy" alt="6:46, pushups on a lime page: rep 3 of 20, with the pace dot on its box.">
-                      <img class="scr" src="img/stage-breathing.jpg" width="640" height="1385" loading="lazy" alt="6:47, box breathing on a purple page: hold for 2.">
-                      <img class="scr" src="img/stage-bed.jpg" width="640" height="1385" loading="lazy" alt="6:49, make the bed on a mint page: 1:21 left.">
-                      <img class="scr" src="img/stage-done.jpg" width="640" height="1385" loading="lazy" alt="6:52, routine complete: all four stages done in 7 minutes 19 seconds, and the streak ring counts the morning.">
+                      <img class="scr is-on" src="img/stage-water.jpg" width="640" height="1385" loading="lazy" alt="The fuel stage, a glass of water, on a yellow page: tap Done when the glass is empty.">
+                      <img class="scr" src="img/stage-pushups.jpg" width="640" height="1385" loading="lazy" alt="The exercise stage, pushups, on a lime page: rep 3 of 20, with the pace dot on its box.">
+                      <img class="scr" src="img/stage-breathing.jpg" width="640" height="1385" loading="lazy" alt="The mindfulness stage, box breathing, on a purple page: hold for 2.">
+                      <img class="scr" src="img/stage-bed.jpg" width="640" height="1385" loading="lazy" alt="The extra stage, make the bed, on a mint page: 1:21 left.">
+                      <img class="scr" src="img/stage-done.jpg" width="640" height="1385" loading="lazy" alt="Routine complete: all four stages done, and the streak ring counts the morning.">
                       <span class="island" aria-hidden="true"></span>
                     </div>
                   </div>
@@ -934,45 +909,40 @@ a.store:hover::after { translate: 120% 0; }
               <li class="tl-item is-active" style="--c: var(--yellow)" data-color="#FFE45C" data-time="6:45">
                 <span class="tl-marker" aria-hidden="true"><span class="ms ms-stage">water_drop</span><span class="ms ms-done">check</span></span>
                 <div class="tl-body">
-                  <p class="tl-time"><time datetime="06:45">6:45</time><span class="tl-cat">Fuel</span></p>
-                  <h3>Glass of water</h3>
-                  <p class="tl-text">No timer on this one. Drink a full glass before the coffee, then tap Done.</p>
+                  <h3>Fuel</h3>
+                  <p class="tl-text">Start with a glass of water, before the coffee. There's no timer on this one, so tap Done when the glass is empty.</p>
                   <p class="tl-chip">About 1 min</p>
                 </div>
               </li>
-              <li class="tl-item" style="--c: var(--lime)" data-color="#C8F53C" data-time="6:46">
+              <li class="tl-item" style="--c: var(--lime)" data-color="#C8F53C" data-time="6:50">
                 <span class="tl-marker" aria-hidden="true"><span class="ms ms-stage">directions_run</span><span class="ms ms-done">check</span></span>
                 <div class="tl-body">
-                  <p class="tl-time"><time datetime="06:46">6:46</time><span class="tl-cat">Exercise</span></p>
-                  <h3>Pushups</h3>
-                  <p class="tl-text">A dot paces every rep, one every 3 seconds. At 20, the stage ticks itself off.</p>
+                  <h3>Exercise</h3>
+                  <p class="tl-text">Pushups, paced by a dot that moves once every 3 seconds. At 20 reps, the stage ticks itself off.</p>
                   <p class="tl-chip">20 reps in 1 min</p>
                 </div>
               </li>
-              <li class="tl-item" style="--c: var(--purple)" data-color="#B9A8FF" data-time="6:47">
+              <li class="tl-item" style="--c: var(--purple)" data-color="#B9A8FF" data-time="6:55">
                 <span class="tl-marker" aria-hidden="true"><span class="ms ms-stage">air</span><span class="ms ms-done">check</span></span>
                 <div class="tl-body">
-                  <p class="tl-time"><time datetime="06:47">6:47</time><span class="tl-cat">Mindfulness</span></p>
-                  <h3>Box breathing</h3>
-                  <p class="tl-text">Follow the dot around the box: in for 4, hold 4, out for 4, hold 4.</p>
+                  <h3>Mindfulness</h3>
+                  <p class="tl-text">Box breathing, following the dot around the box. In for 4, hold for 4, out for 4, hold for 4.</p>
                   <p class="tl-chip">2 min</p>
                 </div>
               </li>
-              <li class="tl-item" style="--c: var(--mint)" data-color="#8FEBD2" data-time="6:49">
+              <li class="tl-item" style="--c: var(--mint)" data-color="#8FEBD2" data-time="7:00">
                 <span class="tl-marker" aria-hidden="true"><span class="ms ms-stage">bed</span><span class="ms ms-done">check</span></span>
                 <div class="tl-body">
-                  <p class="tl-time"><time datetime="06:49">6:49</time><span class="tl-cat">Extra</span></p>
-                  <h3>Make the bed</h3>
-                  <p class="tl-text">A countdown big enough to read from across the room.</p>
+                  <h3>Extra</h3>
+                  <p class="tl-text">Make the bed against a countdown you can read from across the room. When the time is up, an alarm rings, even on silent.</p>
                   <p class="tl-chip">1 min 30 s</p>
                 </div>
               </li>
-              <li class="tl-item" style="--c: var(--lime)" data-color="#C8F53C" data-time="6:52">
+              <li class="tl-item" style="--c: var(--lime)" data-color="#C8F53C" data-time="7:05">
                 <span class="tl-marker" aria-hidden="true"><span class="ms ms-stage">check</span><span class="ms ms-done">check</span></span>
                 <div class="tl-body">
-                  <p class="tl-time"><time datetime="06:52">6:52</time><span class="tl-cat">Done</span></p>
-                  <h3>Routine complete</h3>
-                  <p class="tl-text">Every stage done, in about seven minutes. Your streak goes up by one, and tomorrow's reminder is already set.</p>
+                  <h3>Done</h3>
+                  <p class="tl-text">Every stage is done. Your streak goes up by one, and tomorrow's reminder is already set.</p>
                   <p class="tl-chip">Streak +1</p>
                 </div>
               </li>
@@ -1056,39 +1026,6 @@ a.store:hover::after { translate: 120% 0; }
             <h3>Reminders that help</h3>
             <p>One at your start time, a nudge if you haven't started, and an evening check if the day is still open.</p>
           </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="pro" id="pro">
-      <div class="wrap">
-        <div class="sec-head">
-          <p class="eyebrow reveal">Daybreak Pro</p>
-          <h2 class="h2 reveal-text">More room for your morning.</h2>
-          <p class="sec-lede reveal reveal-2">Pro adds the extras once your routine becomes a habit. Pay monthly, or once and keep it.</p>
-        </div>
-        <div class="pro-grid">
-          <ul class="pro-list">
-            <li class="glass-dark reveal" data-tilt="5"><span class="ic" style="--c: var(--lime)"><span class="ms" aria-hidden="true">alarm</span></span><div><b>Wake-up alarm</b><p>Rings at your start time, even on silent, and opens straight into your routine.</p></div></li>
-            <li class="glass-dark reveal reveal-2" data-tilt="5"><span class="ic" style="--c: var(--mint)"><span class="ms" aria-hidden="true">trending_up</span></span><div><b>Reps that rise</b><p>Rep goals go up a little each week, at the same steady pace.</p></div></li>
-            <li class="glass-dark reveal" data-tilt="5"><span class="ic" style="--c: var(--purple)"><span class="ms" aria-hidden="true">weekend</span></span><div><b>Rest days</b><p>One missed morning a week keeps your streak.</p></div></li>
-            <li class="glass-dark reveal reveal-2" data-tilt="5"><span class="ic" style="--c: var(--yellow)"><span class="ms" aria-hidden="true">calendar_month</span></span><div><b>A second routine</b><p>Weekends or evenings, each with its own stages and start time.</p></div></li>
-            <li class="glass-dark reveal" data-tilt="5"><span class="ic" style="--c: var(--lime)"><span class="ms" aria-hidden="true">edit</span></span><div><b>Your own stages</b><p>Add anything the library doesn't have, and go past two extras.</p></div></li>
-            <li class="glass-dark reveal reveal-2" data-tilt="5"><span class="ic" style="--c: var(--mint)"><span class="ms" aria-hidden="true">history</span></span><div><b>Full history</b><p>Your consistency, each stage's record and every morning you've logged.</p></div></li>
-          </ul>
-          <div class="plans">
-            <div class="plan glass-dark reveal" data-tilt="4">
-              <p class="plan-name">Monthly</p>
-              <p class="plan-price"><b>$2.99</b><span>a month</span></p>
-              <p class="plan-note">Renews monthly. Cancel anytime in Settings.</p>
-            </div>
-            <div class="plan best reveal reveal-2" data-tilt="4">
-              <p class="plan-name">Lifetime <span class="badge">Best value</span></p>
-              <p class="plan-price"><b>$19.99</b><span>once</span></p>
-              <p class="plan-note">Pay once and keep it. No subscription.</p>
-            </div>
-            <p class="fine">Both plans unlock the same features, plus five app icons in the Daybreak colors. Prices in US dollars; the App Store shows the price for your country.</p>
-          </div>
         </div>
       </div>
     </section>
@@ -1559,6 +1496,17 @@ a.store:hover::after { translate: 120% 0; }
   // The navigation turns to dark glass once the night is behind it.
   const nav = document.querySelector(".nav");
   const horizon = document.querySelector(".horizon");
+  // The color that shows when the page bounces past its ends: the sky at the
+  // top, the night at the bottom.
+  const rootEl = document.documentElement;
+  let rootDark = null;
+  const updateRoot = () => {
+    const dark = window.scrollY > (rootEl.scrollHeight - window.innerHeight) / 2;
+    if (dark === rootDark) return;
+    rootDark = dark;
+    rootEl.style.backgroundColor = dark ? "var(--night)" : "var(--paper)";
+  };
+
   const updateNav = () => {
     if (!nav || !horizon) return;
     nav.classList.toggle("is-dark", horizon.getBoundingClientRect().top < 56);
@@ -1610,6 +1558,7 @@ a.store:hover::after { translate: 120% 0; }
     if (scrolled) {
       scrolled = false;
       updateNav();
+      updateRoot();
       if (tl) tl.read();
     }
     if (tl) tl.step(dt);
