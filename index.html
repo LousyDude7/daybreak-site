@@ -14,10 +14,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Sora:wght@500..700&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,1,0&icon_names=air,alarm,arrow_downward,arrow_forward,bed,calendar_month,check,cloud,directions_run,edit,favorite,history,local_fire_department,lock,notifications,palette,phone_iphone,trending_up,water_drop,weekend&display=block">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,1,0&icon_names=air,alarm,arrow_downward,arrow_forward,bed,calendar_month,check,cloud,directions_run,edit,favorite,history,local_fire_department,lock,notifications,pause,phone_iphone,play_arrow,trending_up,water_drop,weekend&display=block">
 <style>
-/* Layout: a sunrise. A light, airy sky where a liquid-glass sun rises over a dark horizon
-   behind a 3D phone; below the horizon the page is night, lit by the app's four stage colors. */
+/* Layout: a sunrise. A light sky where a liquid-glass sun, colored by the stage on
+   screen, rises over a dark horizon behind a 3D phone; below the horizon it is night,
+   and a timeline walks one real morning, 6:45 to 6:51. */
+@property --stage { syntax: "<color>"; inherits: true; initial-value: #C8F53C; }
+@property --tl-stage { syntax: "<color>"; inherits: true; initial-value: #FFE45C; }
 :root {
   /* Color: Daybreak's own palette, from the app's Theme.swift */
   --ink: #0F1115;
@@ -38,6 +41,7 @@
   --body: "DM Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --gutter: max(16px, 4.5vw);
   --wrap: 1180px;
+  --ease: cubic-bezier(.2, .8, .2, 1);
   color-scheme: light;
 }
 
@@ -56,6 +60,7 @@ body {
 }
 img { display: block; max-width: 100%; }
 a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; }
 p { margin: 0; }
 section[id] { scroll-margin-top: 88px; }
 :focus-visible { outline: 3px solid var(--purple); outline-offset: 3px; border-radius: 14px; }
@@ -79,10 +84,6 @@ section[id] { scroll-margin-top: 88px; }
   font-feature-settings: "liga";
   font-variation-settings: "FILL" 1, "wght" 500, "GRAD" 0, "opsz" 24;
 }
-.sr-only {
-  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
-  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
-}
 
 /* Liquid glass, light and dark */
 .glass {
@@ -105,17 +106,21 @@ section[id] { scroll-margin-top: 88px; }
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   min-height: 44px; padding: 0 20px; border-radius: 999px;
   font-family: var(--body); font-weight: 600; font-size: 15px;
-  transition: transform .2s ease, background-color .2s ease, box-shadow .2s ease;
+  transition: transform .2s ease, background-color .3s ease, color .3s ease, box-shadow .2s ease;
 }
 .btn:active { transform: scale(.97); }
+.btn .ms { transition: translate .3s var(--ease), color .3s ease; }
 .btn-ink { background: var(--ink); color: #fff; }
 .btn-ink .ms { color: var(--lime); font-size: 20px; }
 .btn-ink:hover { box-shadow: 0 10px 24px -10px rgba(15, 17, 21, .6); }
+.btn-ink:hover .ms { translate: 3px 0; }
 .btn-glass { color: var(--ink); min-height: 56px; padding: 0 24px; border-radius: 18px; font-size: 16px; }
 .btn-glass .ms { font-size: 20px; }
 .btn-glass:hover { background: rgba(255, 255, 255, .92); }
+.btn-glass:hover .ms { translate: 0 3px; }
 
 .store {
+  position: relative; overflow: hidden;
   display: inline-flex; align-items: center; gap: 10px;
   min-height: 56px; padding: 0 22px 0 16px; border-radius: 18px;
   background: var(--ink); color: #fff;
@@ -123,41 +128,64 @@ section[id] { scroll-margin-top: 88px; }
   transition: transform .2s ease;
 }
 a.store:active { transform: scale(.97); }
+a.store::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, .26) 48%, transparent 66%);
+  translate: -120% 0; transition: translate .9s var(--ease);
+}
+a.store:hover::after { translate: 120% 0; }
 .store .ms { font-size: 30px; font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24; }
 .store-text { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.08; }
 .store-text small { font-size: 11px; font-weight: 500; opacity: .72; letter-spacing: .01em; }
 .store-text b { font-family: var(--display); font-weight: 600; font-size: 19px; letter-spacing: -.01em; }
 .store-light { background: #fff; color: var(--ink); box-shadow: 0 20px 50px -18px rgba(200, 245, 60, .55); }
 
-/* Navigation */
+/* Navigation: light glass over the sky, dark glass once it is over the night */
 .nav-wrap {
   position: fixed; left: 0; right: 0; top: 0; z-index: 50;
   padding: calc(12px + env(safe-area-inset-top, 0px)) var(--gutter) 0;
   pointer-events: none;
 }
 .nav {
-  pointer-events: auto;
+  pointer-events: auto; position: relative; isolation: isolate;
   max-width: 1080px; margin: 0 auto;
   display: flex; align-items: center; gap: 18px;
   padding: 7px 7px 7px 14px; border-radius: 999px;
+  transition: border-color .4s ease, box-shadow .4s ease;
 }
-.brand { display: inline-flex; align-items: center; gap: 10px; font-family: var(--display); font-weight: 600; font-size: 18px; letter-spacing: -.01em; }
+.nav::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(135deg, rgba(36, 38, 44, .86), rgba(20, 22, 26, .74));
+  opacity: 0; transition: opacity .4s ease;
+}
+.nav.is-dark { border-color: rgba(255, 255, 255, .1); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), 0 18px 40px -16px rgba(0, 0, 0, .55); }
+.nav.is-dark::before { opacity: 1; }
+.brand { display: inline-flex; align-items: center; gap: 10px; font-family: var(--display); font-weight: 600; font-size: 18px; letter-spacing: -.01em; transition: color .4s ease; }
 .brand-mark {
   width: 30px; height: 30px; border-radius: 9px; flex: none;
   display: grid; place-items: center;
   background: var(--lime); color: var(--ink);
   box-shadow: inset 0 -2px 0 rgba(63, 90, 8, .18);
+  transition: rotate .6s var(--ease);
 }
+.brand:hover .brand-mark { rotate: 90deg; }
 .nav-links { display: flex; gap: 2px; margin: 0 0 0 auto; padding: 0; list-style: none; }
-.nav-links a { display: block; padding: 9px 14px; border-radius: 999px; font-weight: 500; font-size: 15px; color: var(--muted); transition: color .2s, background-color .2s; }
+.nav-links a { display: block; padding: 9px 14px; border-radius: 999px; font-weight: 500; font-size: 15px; color: var(--muted); transition: color .3s, background-color .3s; }
 .nav-links a:hover { color: var(--ink); background: rgba(15, 17, 21, .05); }
+.nav.is-dark .brand { color: var(--night-text); }
+.nav.is-dark .nav-links a { color: var(--night-muted); }
+.nav.is-dark .nav-links a:hover { color: var(--night-text); background: rgba(255, 255, 255, .08); }
+.nav.is-dark .btn-ink { background: var(--lime); color: var(--ink); }
+.nav.is-dark .btn-ink .ms { color: var(--ink); }
 
 /* Hero: the sky */
 .hero {
+  --stage: #C8F53C;
   position: relative;
   overflow-x: clip;
+  transition: --stage 1.1s ease;
   background:
-    radial-gradient(55% 45% at 50% 58%, rgba(255, 228, 92, .42), transparent 72%),
+    radial-gradient(55% 45% at 50% 58%, color-mix(in srgb, var(--stage) 44%, transparent), transparent 72%),
     radial-gradient(38% 36% at 14% 22%, rgba(200, 245, 60, .30), transparent 72%),
     radial-gradient(40% 40% at 88% 26%, rgba(185, 168, 255, .34), transparent 72%),
     radial-gradient(34% 30% at 76% 64%, rgba(143, 235, 210, .30), transparent 72%),
@@ -193,19 +221,25 @@ a.store:active { transform: scale(.97); }
   line-height: 1; padding: 8px 12px; border-radius: 10px;
   box-shadow: 0 10px 22px -10px rgba(63, 90, 8, .55), inset 0 -2px 0 rgba(63, 90, 8, .16);
   white-space: nowrap;
+  transition: transform .5s var(--ease);
 }
-.spark { position: absolute; width: var(--s); height: var(--s); pointer-events: none; }
+.title-inner:hover .tag { transform: rotate(-3deg) translateY(-3px); }
+.spark { position: absolute; width: var(--s); height: var(--s); pointer-events: none; animation: twinkle 4.8s ease-in-out infinite; }
 .spark path { fill: var(--c); }
 .s1 { --s: 30px; --c: var(--purple); right: -44px; top: -26px; }
-.s2 { --s: 20px; --c: #A6D81C; left: -46px; top: 58%; }
-.s3 { --s: 16px; --c: #F2C94C; right: -20px; bottom: 6%; }
-.s4 { --s: 12px; --c: var(--purple); left: 18%; bottom: -20px; }
+.s2 { --s: 20px; --c: #A6D81C; left: -46px; top: 58%; animation-delay: -1.6s; }
+.s3 { --s: 16px; --c: #F2C94C; right: -20px; bottom: 6%; animation-delay: -3.1s; }
+.s4 { --s: 12px; --c: var(--purple); left: 18%; bottom: -20px; animation-delay: -2.2s; }
+@keyframes twinkle {
+  0%, 100% { scale: 1; rotate: 0deg; }
+  50% { scale: .72; rotate: 45deg; }
+}
 
 .lede { margin-top: 22px; max-width: 33em; font-size: clamp(17px, 1.6vw, 20px); color: var(--muted); text-wrap: pretty; }
 .cta-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 32px; }
 
 /* The 3D scene: sun, horizon, phone and glass cards */
-.scene { position: relative; height: clamp(620px, 64vw, 860px); margin-top: 26px; clip-path: inset(-1200px -100vw 0 -100vw); }
+.scene { position: relative; height: clamp(640px, 64vw, 860px); margin-top: 26px; clip-path: inset(-1200px -100vw 0 -100vw); }
 .sun-wrap {
   --size: min(900px, 150vw);
   position: absolute; left: 50%; top: calc(45% - var(--size) / 2);
@@ -217,8 +251,8 @@ a.store:active { transform: scale(.97); }
 .sun-wrap canvas { display: block; width: 100%; height: 100%; }
 .sun-fallback {
   position: absolute; inset: 16%; border-radius: 50%; display: none;
-  background: radial-gradient(circle at 42% 38%, #FFFBE8 0%, var(--yellow) 30%, var(--lime) 66%, #B3A2FF 100%);
-  box-shadow: 0 0 140px 40px rgba(255, 228, 92, .45);
+  background: radial-gradient(circle at 42% 38%, #FFFBE8 0%, color-mix(in srgb, var(--stage) 50%, #FFF29E) 32%, var(--stage) 68%, color-mix(in srgb, var(--stage) 70%, #B3A2FF) 100%);
+  box-shadow: 0 0 140px 40px color-mix(in srgb, var(--stage) 45%, transparent);
 }
 .no-webgl .sun-fallback { display: block; }
 .no-webgl .sun-wrap canvas { display: none; }
@@ -231,15 +265,17 @@ a.store:active { transform: scale(.97); }
   position: absolute; left: 0; right: 0; bottom: 0; height: 37%; z-index: 2;
   background: linear-gradient(180deg, #1C1E17 0%, var(--night) 34%);
   border-radius: 50% 50% 0 0 / clamp(46px, 9vw, 140px) clamp(46px, 9vw, 140px) 0 0;
-  box-shadow: 0 -1px 0 rgba(255, 236, 150, .75), 0 -34px 90px -26px rgba(255, 228, 92, .9);
+  box-shadow: 0 -1px 0 color-mix(in srgb, var(--stage) 50%, white), 0 -34px 90px -26px color-mix(in srgb, var(--stage) 92%, transparent);
 }
 
+/* Phones */
 .phone-wrap {
   --pw: clamp(214px, 23vw, 300px);
   position: absolute; left: 50%; top: 8%; z-index: 3;
   width: var(--pw);
   transform: translateX(-50%);
   perspective: 1600px;
+  cursor: pointer;
   animation: phone-in 1.7s cubic-bezier(.16, .84, .24, 1) .2s both;
 }
 @keyframes phone-in {
@@ -247,10 +283,10 @@ a.store:active { transform: scale(.97); }
   to { transform: translate(-50%, 0); }
 }
 .phone3d {
-  --rx: 7deg; --ry: -14deg; --rz: 3deg; --glare: -30%;
+  --rx: 7deg; --ry: -14deg; --rz: 3deg; --sy: 0px; --glare: -30%;
   position: relative;
   transform-style: preserve-3d;
-  transform: rotateX(var(--rx)) rotateY(var(--ry)) rotateZ(var(--rz));
+  transform: translateY(var(--sy)) rotateX(var(--rx)) rotateY(var(--ry)) rotateZ(var(--rz));
 }
 .phone { --pr: calc(var(--pw) * .165); }
 .pedge {
@@ -263,19 +299,34 @@ a.store:active { transform: scale(.97); }
   position: relative; overflow: hidden; border-radius: var(--pr);
   padding: calc(var(--pw) * .024);
   background: linear-gradient(135deg, #F1F3F5, #B8BDC3 34%, #F5F6F7 56%, #9DA2A9);
-  box-shadow: 0 60px 120px -34px rgba(200, 245, 60, .6), 0 34px 60px -24px rgba(15, 17, 21, .45);
+  box-shadow: 0 60px 120px -34px color-mix(in srgb, var(--stage, var(--lime)) 62%, transparent), 0 34px 60px -24px rgba(15, 17, 21, .45);
 }
 .pbezel { position: relative; border-radius: calc(var(--pr) - var(--pw) * .024); padding: calc(var(--pw) * .02); background: #07080A; }
-.pscreen { position: relative; overflow: hidden; border-radius: calc(var(--pr) - var(--pw) * .044); aspect-ratio: 1170 / 2532; background: var(--tone, var(--lime)); }
-.pscreen img { width: 100%; height: 100%; object-fit: cover; }
-.island { position: absolute; left: 50%; top: calc(var(--pw) * .028); width: 30%; height: calc(var(--pw) * .085); transform: translateX(-50%); border-radius: 999px; background: #050506; }
+.pscreen { position: relative; overflow: hidden; border-radius: calc(var(--pr) - var(--pw) * .044); aspect-ratio: 1170 / 2532; background: var(--tone, var(--lime)); isolation: isolate; }
+.island { position: absolute; left: 50%; top: calc(var(--pw) * .028); z-index: 6; width: 30%; height: calc(var(--pw) * .085); transform: translateX(-50%); border-radius: 999px; background: #050506; }
 .glare {
-  position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 7;
   background: linear-gradient(105deg, transparent 32%, rgba(255, 255, 255, .26) 46%, rgba(255, 255, 255, 0) 60%);
   transform: translateX(var(--glare));
   mix-blend-mode: screen;
 }
 
+/* Screens that change the way the app's pages do: the page on top flicks away */
+.scr { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; z-index: 0; backface-visibility: hidden; }
+.scr.is-on { opacity: 1; z-index: 2; }
+.scr.is-next { opacity: 1; z-index: 1; }
+.scr.flick-out { opacity: 1; z-index: 3; animation: flick-out .52s cubic-bezier(.55, .05, .85, .4) forwards; }
+.scr.flick-in { opacity: 1; z-index: 3; animation: flick-in .58s cubic-bezier(.15, .75, .35, 1) forwards; }
+@keyframes flick-out {
+  from { transform: none; border-radius: 0; box-shadow: 0 0 0 rgba(0, 0, 0, 0); }
+  to { transform: translate(122%, -4%) rotate(14deg); border-radius: 22%; box-shadow: -40px 30px 70px rgba(0, 0, 0, .35); }
+}
+@keyframes flick-in {
+  from { transform: translate(122%, -4%) rotate(14deg); border-radius: 22%; box-shadow: -40px 30px 70px rgba(0, 0, 0, .35); }
+  to { transform: none; border-radius: 0; box-shadow: 0 0 0 rgba(0, 0, 0, 0); }
+}
+
+/* Glass cards around the hero phone */
 .fcard {
   position: absolute; z-index: 4;
   padding: 14px 16px; border-radius: 22px;
@@ -305,8 +356,46 @@ a.store:active { transform: scale(.97); }
 .fc-time small { font-size: 15px; font-weight: 600; letter-spacing: 0; }
 .fc-sub { margin-top: 6px; font-size: 13.5px; color: var(--muted); }
 .fc-stages { display: flex; gap: 6px; margin-top: 10px; }
-.fc-stages span { width: 36px; height: 36px; border-radius: 11px; display: grid; place-items: center; background: var(--c); }
+.fc-stages span {
+  width: 36px; height: 36px; border-radius: 11px; display: grid; place-items: center; background: var(--c);
+  transition: transform .45s var(--ease), box-shadow .45s var(--ease);
+}
+.fc-stages span.is-on { transform: translateY(-3px) scale(1.12); box-shadow: 0 0 0 2px var(--ink), 0 10px 18px -8px rgba(15, 17, 21, .55); }
 .fc-stages .ms { font-size: 19px; }
+
+/* The stages the hero phone is showing, and a way to stop them */
+.stage-track {
+  position: absolute; left: 50%; bottom: clamp(18px, 3vw, 34px); z-index: 4;
+  translate: -50% 0;
+  display: flex; align-items: center; gap: 2px;
+  padding: 4px 4px 4px 10px; border-radius: 999px;
+}
+.seg {
+  display: grid; place-items: center;
+  min-width: 24px; height: 36px; padding: 0 4px;
+  border: 0; background: none; cursor: pointer;
+}
+.seg .bar {
+  position: relative; overflow: hidden; display: block;
+  width: 10px; height: 10px; border-radius: 999px;
+  background: color-mix(in srgb, var(--c) 55%, transparent);
+  transition: width .5s var(--ease), background-color .4s ease;
+}
+.seg:hover .bar { background: var(--c); }
+.seg.is-on .bar { width: 46px; background: rgba(255, 255, 255, .16); }
+.seg .fill {
+  position: absolute; inset: 0; border-radius: inherit; background: var(--c);
+  transform-origin: left center; transform: scaleX(0);
+}
+.seg.is-on .fill { transform: scaleX(var(--p, 0)); }
+.play {
+  width: 36px; height: 36px; margin-left: 4px; border-radius: 50%; border: 0; cursor: pointer;
+  display: grid; place-items: center;
+  background: rgba(255, 255, 255, .1); color: var(--night-text);
+  transition: background-color .3s ease;
+}
+.play:hover { background: rgba(255, 255, 255, .2); }
+.play .ms { font-size: 20px; }
 
 /* Night: everything below the horizon */
 .night { position: relative; background: var(--night); color: var(--night-text); overflow-x: clip; }
@@ -326,31 +415,124 @@ a.store:active { transform: scale(.97); }
 .sec-lede { margin-top: 18px; max-width: 36em; font-size: clamp(17px, 1.5vw, 19px); color: var(--night-muted); text-wrap: pretty; }
 .sec-head { max-width: 780px; }
 
-.stages { padding-block: clamp(28px, 4vw, 64px) clamp(110px, 11vw, 150px); }
-.stage-row {
-  list-style: none; margin: 60px 0 0; padding: 0;
-  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(16px, 2.6vw, 36px);
-  align-items: start;
+/* Timeline: one real morning, with the phone pinned beside it */
+.timeline {
+  --tl-stage: #FFE45C;
+  transition: --tl-stage .9s ease;
+  padding-block: clamp(28px, 4vw, 64px) clamp(90px, 10vw, 140px);
 }
-.stage-row li { display: flex; flex-direction: column; gap: 18px; container-type: inline-size; transition: transform .5s cubic-bezier(.2, .8, .2, 1); }
-.stage-row li:nth-child(1) { transform: rotate(-3deg); }
-.stage-row li:nth-child(2) { transform: translateY(52px) rotate(2deg); }
-.stage-row li:nth-child(3) { transform: translateY(14px) rotate(-2deg); }
-.stage-row li:nth-child(4) { transform: translateY(64px) rotate(3deg); }
-.stage-row li:hover { transform: translateY(var(--lift, 0)) rotate(0deg); }
-.stage-row li:nth-child(2):hover { --lift: 44px; }
-.stage-row li:nth-child(3):hover { --lift: 6px; }
-.stage-row li:nth-child(4):hover { --lift: 56px; }
-.stage-row .phone { --pw: 100cqw; }
-.stage-row .pfront { box-shadow: 0 40px 90px -30px color-mix(in srgb, var(--tone) 55%, transparent), 0 24px 40px -22px rgba(0, 0, 0, .6); }
-.cap { display: flex; align-items: center; gap: 10px; font-size: 15px; color: var(--night-muted); }
-.cap .dot { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; background: var(--tone); color: var(--ink); flex: none; }
-.cap .dot .ms { font-size: 17px; }
-.cap b { color: var(--night-text); font-weight: 600; }
+.tl {
+  display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
+  gap: clamp(24px, 5vw, 72px);
+  margin-top: clamp(28px, 4vw, 56px);
+}
+.tl-track { grid-column: 1; grid-row: 1; position: relative; }
+.tl-stage {
+  --pw: clamp(200px, calc((100vh - 250px) / 2.06), 290px);
+  grid-column: 2; grid-row: 1;
+}
+@supports (height: 100svh) {
+  .tl-stage { --pw: clamp(200px, calc((100svh - 250px) / 2.06), 290px); }
+}
+.tl-sticky {
+  position: sticky;
+  top: max(92px, calc(50vh - (var(--pw) * 2.06 + 70px) / 2 + 26px));
+  display: flex; flex-direction: column; align-items: center; gap: 16px;
+}
+.tl-glow {
+  position: absolute; left: 50%; top: 55%; z-index: 0;
+  width: 170%; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--tl-stage) 34%, transparent), color-mix(in srgb, var(--tl-stage) 8%, transparent) 55%, transparent);
+  pointer-events: none;
+}
+.tl-clock {
+  position: relative; z-index: 1;
+  display: inline-flex; align-items: baseline; gap: 6px;
+  padding: 8px 16px; border-radius: 999px;
+  font-family: var(--display); font-weight: 700; font-size: 22px; letter-spacing: -.02em; line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.tl-clock small { font-size: 13px; font-weight: 600; color: var(--night-muted); letter-spacing: 0; }
+.roll { display: inline-grid; overflow: hidden; }
+.roll > span { grid-area: 1 / 1; }
+.r-in-up { animation: r-in-up .55s var(--ease) both; }
+.r-in-down { animation: r-in-down .55s var(--ease) both; }
+.r-out-up { animation: r-out-up .55s var(--ease) both; }
+.r-out-down { animation: r-out-down .55s var(--ease) both; }
+@keyframes r-in-up { from { translate: 0 100%; opacity: 0; } }
+@keyframes r-in-down { from { translate: 0 -100%; opacity: 0; } }
+@keyframes r-out-up { to { translate: 0 -100%; opacity: 0; } }
+@keyframes r-out-down { to { translate: 0 100%; opacity: 0; } }
+.tl-phone { position: relative; z-index: 1; width: var(--pw); rotate: -2deg; }
+.tl-phone .pfront { box-shadow: 0 50px 110px -34px color-mix(in srgb, var(--tl-stage) 60%, transparent), 0 30px 60px -26px rgba(0, 0, 0, .7); }
 
+.tl-list { list-style: none; margin: 0; padding: 0 0 18vh; }
+.tl-item {
+  position: relative; z-index: 1;
+  display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 22px; align-items: center;
+  min-height: clamp(250px, 48vh, 430px);
+  cursor: pointer;
+}
+.tl-marker {
+  position: relative; z-index: 2;
+  width: 52px; height: 52px; border-radius: 16px;
+  display: grid; place-items: center;
+  background: #17191E; color: var(--night-muted);
+  border: 1px solid rgba(255, 255, 255, .1);
+  transition: background-color .45s ease, color .45s ease, border-color .45s ease, transform .5s var(--ease), box-shadow .5s var(--ease);
+}
+.tl-marker .ms { font-size: 24px; }
+.tl-marker .ms-done { display: none; }
+.tl-item.is-active .tl-marker, .tl-item.is-past .tl-marker { background: var(--c); color: var(--ink); border-color: transparent; }
+.tl-item.is-past .tl-marker .ms-stage { display: none; }
+.tl-item.is-past .tl-marker .ms-done { display: inline-block; }
+.tl-item.is-active .tl-marker {
+  transform: scale(1.1);
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--c) 20%, transparent), 0 16px 40px -10px color-mix(in srgb, var(--c) 75%, transparent);
+}
+.tl-item:hover .tl-marker { border-color: color-mix(in srgb, var(--c) 60%, transparent); }
+.tl-marker.ping::after {
+  content: ""; position: absolute; inset: -2px; border-radius: 18px;
+  border: 2px solid var(--c); pointer-events: none;
+  animation: ping .9s ease-out forwards;
+}
+@keyframes ping {
+  from { opacity: .9; transform: scale(1); }
+  to { opacity: 0; transform: scale(1.7); }
+}
+.tl-body { max-width: 31em; opacity: .38; transition: opacity .5s ease, translate .5s var(--ease); }
+.tl-item.is-past .tl-body { opacity: .56; }
+.tl-item.is-active .tl-body { opacity: 1; translate: 6px 0; }
+.tl-item:hover .tl-body { opacity: 1; }
+.tl-time { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 14px; }
+.tl-time time { font-family: var(--display); font-weight: 700; font-size: clamp(30px, 3.4vw, 44px); letter-spacing: -.035em; line-height: 1; font-variant-numeric: tabular-nums; }
+.tl-cat { font-size: 12.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--c); }
+.tl-body h3 { margin: 10px 0 0; font-family: var(--display); font-weight: 600; font-size: clamp(22px, 2.2vw, 28px); letter-spacing: -.02em; line-height: 1.2; }
+.tl-text { margin-top: 8px; font-size: 16.5px; color: var(--night-muted); text-wrap: pretty; }
+.tl-chip {
+  display: inline-flex; margin-top: 14px; padding: 6px 12px; border-radius: 999px;
+  font-size: 13.5px; font-weight: 600; font-variant-numeric: tabular-nums;
+  background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .08);
+}
+.tl-rail {
+  position: absolute; left: 25px; top: 0; z-index: 0;
+  width: 2px; height: 0; border-radius: 2px;
+  background: rgba(255, 255, 255, .09);
+  pointer-events: none;
+}
+.tl-fill { position: absolute; left: 0; top: 0; width: 100%; height: 0; border-radius: 2px; background: var(--yellow); }
+.tl-dot {
+  position: absolute; left: 50%; top: 0; z-index: 1;
+  width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--tl-stage) 35%, transparent), 0 0 26px 8px color-mix(in srgb, var(--tl-stage) 55%, transparent);
+  will-change: transform;
+}
+
+/* Build it once, with the setup screens */
 .build { padding-bottom: clamp(90px, 10vw, 140px); }
 .lime-panel {
-  position: relative; overflow: hidden;
+  position: relative; overflow: clip;
   border-radius: clamp(28px, 4vw, 48px);
   background: var(--lime); color: var(--ink);
   padding: clamp(28px, 5.5vw, 72px);
@@ -369,22 +551,39 @@ a.store:active { transform: scale(.97); }
 .lp-copy p { margin-top: 24px; max-width: 25em; font-size: 18px; color: #2E3A10; }
 .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
 .steps li {
-  display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 16px; align-items: start;
+  position: relative; overflow: clip;
+  display: grid; grid-template-columns: 44px minmax(0, 1fr) 96px; gap: 16px; align-items: start;
   padding: 18px; border-radius: 22px;
   background: rgba(255, 255, 255, .55); border: 1px solid rgba(255, 255, 255, .75);
   -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9);
+  transition: background-color .35s ease, box-shadow .35s ease;
 }
+.steps li:hover { background: rgba(255, 255, 255, .72); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .95), 0 18px 34px -22px rgba(63, 90, 8, .6); }
 .steps .n { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; background: var(--ink); color: var(--lime); font-family: var(--display); font-weight: 700; font-size: 18px; }
 .steps b { font-family: var(--display); font-weight: 600; font-size: 19px; letter-spacing: -.012em; }
 .steps p { margin-top: 3px; font-size: 15.5px; color: #3A4418; }
+.step-shot { position: relative; align-self: stretch; min-height: 118px; margin: -18px -18px -18px 0; }
+.mini-phone {
+  position: absolute; top: 16px; right: 18px;
+  width: 90px; padding: 3px; border-radius: 17px;
+  background: linear-gradient(135deg, #F1F3F5, #B8BDC3 34%, #F5F6F7 56%, #9DA2A9);
+  box-shadow: 0 18px 30px -14px rgba(15, 17, 21, .5);
+  transform: rotate(-6deg); transform-origin: 50% 100%;
+  transition: transform .6s var(--ease);
+}
+.mini-phone > span { display: block; padding: 2.5px; border-radius: 14px; background: #07080A; }
+.mini-phone img { width: 100%; height: auto; aspect-ratio: 1170 / 2532; object-fit: cover; border-radius: 11.5px; }
+.steps li:hover .mini-phone { transform: translateY(-16px) rotate(0deg); }
 
+/* Features */
 .features { padding-bottom: clamp(90px, 10vw, 140px); }
 .bento { margin-top: 52px; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 16px; }
 .tile { position: relative; overflow: hidden; border-radius: 28px; padding: 26px; min-width: 0; display: flex; flex-direction: column; }
 .tile h3 { margin: 0; font-family: var(--display); font-weight: 600; font-size: 21px; letter-spacing: -.016em; }
 .tile p { margin-top: 8px; font-size: 15.5px; color: var(--night-muted); }
-.tile .ic { width: 42px; height: 42px; border-radius: 13px; display: grid; place-items: center; color: var(--ink); background: var(--c); margin-bottom: 22px; }
+.tile .ic { width: 42px; height: 42px; border-radius: 13px; display: grid; place-items: center; color: var(--ink); background: var(--c); margin-bottom: 22px; transition: transform .5s var(--ease); }
+.tile:hover .ic { transform: rotate(-8deg) scale(1.08); }
 .tile .ic .ms { font-size: 22px; }
 .t-wide { grid-column: span 3; }
 .t-small { grid-column: span 2; }
@@ -398,17 +597,20 @@ a.store:active { transform: scale(.97); }
 .streak-num b { font-family: var(--display); font-weight: 700; font-size: 64px; letter-spacing: -.04em; line-height: 1; }
 .streak-num span { font-size: 14px; color: var(--night-muted); }
 .grid5 { display: grid; grid-template-columns: repeat(7, minmax(0, 20px)); gap: 6px; justify-content: end; }
-.grid5 i { aspect-ratio: 1; border-radius: 6px; background: rgba(255, 255, 255, .08); }
+.grid5 i { aspect-ratio: 1; border-radius: 6px; background: rgba(255, 255, 255, .08); transition: transform .4s var(--ease); }
 .grid5 i.on { background: var(--lime); }
 .grid5 i.now { background: transparent; box-shadow: inset 0 0 0 2px var(--night-text); }
 .grid5 i.soon { background: rgba(255, 255, 255, .035); }
+.tile:hover .grid5 i.on { transform: scale(1.1); }
 .widget-art { display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap; }
 .widget {
   width: 148px; aspect-ratio: 1; border-radius: 30px; padding: 16px;
   background: var(--ink); color: #fff;
   display: flex; flex-direction: column; justify-content: space-between;
   box-shadow: 0 20px 40px -18px rgba(15, 17, 21, .55);
+  transition: transform .5s var(--ease);
 }
+.tile:hover .widget { transform: rotate(-3deg) translateY(-4px); }
 .widget small { font-size: 11px; font-weight: 600; letter-spacing: .08em; color: var(--lime); }
 .widget b { font-family: var(--display); font-size: 30px; letter-spacing: -.03em; line-height: 1; }
 .widget span { font-size: 12.5px; color: #B9BDC6; }
@@ -421,11 +623,13 @@ a.store:active { transform: scale(.97); }
 .live .ico .ms { font-size: 17px; }
 .live em { font-style: normal; color: var(--lime); font-variant-numeric: tabular-nums; }
 
+/* Pro */
 .pro { padding-bottom: clamp(90px, 10vw, 140px); }
 .pro-grid { margin-top: 52px; display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: clamp(20px, 3vw, 40px); align-items: start; }
 .pro-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .pro-list li { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 14px; padding: 18px; border-radius: 22px; }
-.pro-list .ic { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--c); color: var(--ink); }
+.pro-list .ic { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--c); color: var(--ink); transition: transform .5s var(--ease); }
+.pro-list li:hover .ic { transform: rotate(-8deg) scale(1.08); }
 .pro-list .ic .ms { font-size: 21px; }
 .pro-list b { font-family: var(--display); font-weight: 600; font-size: 17px; letter-spacing: -.01em; }
 .pro-list p { margin-top: 3px; font-size: 14.5px; color: var(--night-muted); }
@@ -441,9 +645,11 @@ a.store:active { transform: scale(.97); }
 .badge { background: var(--ink); color: var(--lime); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 4px 9px; border-radius: 999px; }
 .fine { margin: 4px 6px 0; font-size: 13px; color: var(--night-muted); }
 
+/* The last call */
 .final { padding-block: clamp(10px, 2vw, 30px) clamp(110px, 12vw, 160px); text-align: center; }
 .promises { list-style: none; margin: 0 auto; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
-.promises li { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px 10px 12px; border-radius: 999px; font-size: 15px; }
+.promises li { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px 10px 12px; border-radius: 999px; font-size: 15px; transition: translate .4s var(--ease), border-color .4s ease; }
+.promises li:hover { translate: 0 -3px; border-color: rgba(200, 245, 60, .35); }
 .promises .ms { color: var(--lime); font-size: 20px; }
 .final-cta { position: relative; margin-top: clamp(80px, 10vw, 120px); display: flex; flex-direction: column; align-items: center; }
 .final-sun {
@@ -460,8 +666,45 @@ a.store:active { transform: scale(.97); }
 .foot .brand { color: var(--night-text); font-size: 16px; }
 .foot .brand-mark { width: 26px; height: 26px; border-radius: 8px; }
 .foot nav { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 14.5px; }
-.foot nav a:hover { color: var(--night-text); }
+.foot nav a { background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat; transition: color .3s ease, background-size .4s var(--ease); padding-bottom: 2px; }
+.foot nav a:hover { color: var(--night-text); background-size: 100% 1px; }
 .copy { font-size: 14px; }
+
+/* Hover: cards lift and lean toward the pointer, with a soft light under it */
+[data-tilt] {
+  position: relative;
+  transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(var(--lift, 0px));
+  transition: transform .7s var(--ease), border-color .35s ease, box-shadow .35s ease;
+}
+[data-tilt].is-hover { --lift: -4px; transition: transform .2s ease-out, border-color .35s ease, box-shadow .35s ease; }
+.glass-dark[data-tilt].is-hover { border-color: rgba(255, 255, 255, .16); }
+[data-tilt]::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: radial-gradient(380px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, .09), transparent 46%);
+  opacity: 0; transition: opacity .35s ease;
+}
+.t-lime[data-tilt]::after, .plan.best[data-tilt]::after {
+  background: radial-gradient(380px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, .38), transparent 46%);
+}
+[data-tilt].is-hover::after { opacity: 1; }
+
+/* Scroll: things arrive as they come into view, where the browser can tie it to scrolling */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal { animation: reveal-up linear both; animation-timeline: view(); animation-range: entry 0% cover 26%; }
+    .reveal-2 { animation-range: entry 8% cover 32%; }
+    .reveal-3 { animation-range: entry 16% cover 38%; }
+    .reveal-text { animation: reveal-text linear both; animation-timeline: view(); animation-range: entry 0% cover 24%; }
+    .reveal-panel { animation: reveal-panel linear both; animation-timeline: view(); animation-range: entry 0% cover 30%; }
+    .mini-phone { animation: peek linear both; animation-timeline: view(); animation-range: entry 0% cover 42%; }
+    .final-sun { animation: sun-up linear both; animation-timeline: view(); animation-range: entry 0% cover 55%; }
+  }
+}
+@keyframes reveal-up { from { opacity: 0; translate: 0 44px; } to { opacity: 1; translate: 0 0; } }
+@keyframes reveal-text { from { opacity: 0; translate: 0 .35em; filter: blur(8px); } to { opacity: 1; translate: 0 0; filter: blur(0); } }
+@keyframes reveal-panel { from { opacity: .2; scale: .94; translate: 0 50px; } to { opacity: 1; scale: 1; translate: 0 0; } }
+@keyframes peek { from { translate: 0 90px; } to { translate: 0 0; } }
+@keyframes sun-up { from { translate: 0 30%; scale: .8; opacity: .3; } to { translate: 0 0; scale: 1; opacity: 1; } }
 
 /* Tablet */
 @media (max-width: 980px) {
@@ -483,32 +726,44 @@ a.store:active { transform: scale(.97); }
   .nav-links { display: none; }
   .nav .btn { margin-left: auto; }
   .hero-copy { padding-top: calc(112px + env(safe-area-inset-top, 0px)); }
+  .hero-title { margin-top: 46px; }
   .s1 { right: -8px; top: -34px; }
   .s2 { left: -10px; top: 100%; }
   .s3, .s4 { display: none; }
-  .hero-title { margin-top: 46px; }
   .tag { font-size: 11px; padding: 7px 10px; left: 2px; top: -32px; }
   .cta-row { width: 100%; }
   .cta-row > * { flex: 1 1 200px; justify-content: center; }
-  .scene { height: 610px; margin-top: 20px; }
+  .scene { height: 640px; margin-top: 20px; }
   .fcard { padding: 10px 12px; border-radius: 18px; }
   .fcard.c1 { left: var(--gutter); top: 13%; }
   .fcard.c2 { left: auto; right: var(--gutter); top: 36%; }
-}
-@media (max-width: 560px) {
-  .fcard { display: none; }
   .fc-big { font-size: 26px; }
   .fc-time { font-size: 27px; }
   .week { gap: 4px; }
   .week span { width: 18px; height: 18px; }
-  .stage-row {
-    display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
-    gap: 18px; margin-inline: calc(var(--gutter) * -1); padding: 8px var(--gutter) 36px;
-    scrollbar-width: none;
+
+  /* The phone pins across the top while the morning scrolls beneath it */
+  .tl { display: block; margin-top: 24px; }
+  .tl-stage {
+    --pw: min(42vw, calc((50vh - 92px) / 2.06));
+    position: sticky; top: calc(64px + env(safe-area-inset-top, 0px)); z-index: 3;
+    margin-inline: calc(var(--gutter) * -1);
+    padding: 22px var(--gutter) 30px;
+    background: linear-gradient(180deg, var(--night) calc(100% - 26px), rgba(14, 15, 18, 0));
   }
-  .stage-row::-webkit-scrollbar { display: none; }
-  .stage-row li { flex: 0 0 64%; scroll-snap-align: center; }
-  .stage-row li:nth-child(n) { transform: none; }
+  @supports (height: 100svh) {
+    .tl-stage { --pw: min(42vw, calc((50svh - 92px) / 2.06)); }
+  }
+  .tl-sticky { position: relative; top: auto; }
+  .tl-clock { display: none; }
+  .tl-glow { width: 120%; }
+  .tl-list { padding-bottom: 6vh; }
+  .tl-item { grid-template-columns: 44px minmax(0, 1fr); gap: 16px; min-height: 48vh; }
+  .tl-marker { width: 44px; height: 44px; border-radius: 14px; }
+  .tl-marker .ms { font-size: 21px; }
+  .tl-rail { left: 21px; }
+  .tl-item.is-active .tl-body { translate: 0 0; }
+
   .bento { grid-template-columns: minmax(0, 1fr); }
   .t-wide, .t-small, .t-small:last-child { grid-column: auto; }
   .streak-art { grid-template-columns: minmax(0, 1fr); }
@@ -517,12 +772,23 @@ a.store:active { transform: scale(.97); }
   .plans { grid-template-columns: minmax(0, 1fr); }
   .foot-inner { flex-direction: column; align-items: flex-start; }
 }
+@media (max-width: 560px) {
+  .fcard { display: none; }
+  .steps li { grid-template-columns: 44px minmax(0, 1fr); }
+  .step-shot { grid-column: 1 / -1; min-height: 0; height: 150px; margin: 0 -18px -18px; }
+  .mini-phone { top: 18px; right: auto; left: calc(50% - 64px); width: 128px; transform: rotate(-4deg); }
+}
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .sun-wrap, .phone-wrap, .fcard { animation: none; }
-  .stage-row li { transition: none; }
+  .sun-wrap, .phone-wrap, .fcard, .spark { animation: none; }
+  .scr.flick-out { animation: fade-out .3s ease forwards; }
+  .scr.flick-in { animation: fade-in .3s ease forwards; }
+  .r-in-up, .r-in-down, .r-out-up, .r-out-down, .tl-marker.ping::after { animation: none; }
+  [data-tilt], [data-tilt].is-hover { transform: none; }
 }
+@keyframes fade-out { to { opacity: 0; } }
+@keyframes fade-in { from { opacity: 0; } }
 </style>
 
 <header class="nav-wrap">
@@ -574,12 +840,15 @@ a.store:active { transform: scale(.97); }
       </div>
       <div class="horizon" aria-hidden="true"></div>
 
-      <div class="phone-wrap phone">
+      <div class="phone-wrap phone" data-hero-phone>
         <div class="phone3d" data-phone>
           <div class="pfront">
             <div class="pbezel">
-              <div class="pscreen" style="--tone: var(--lime)">
-                <img src="img/stage-pushups.jpg" width="640" height="1385" alt="Daybreak's pushups stage in lime: the pace dot on its box, rep 3 of 20.">
+              <div class="pscreen" data-hero-screens>
+                <img class="scr" src="img/stage-water.jpg" width="640" height="1385" decoding="async" alt="Stage 1, a glass of water, on a yellow page: tap Done when the glass is empty.">
+                <img class="scr is-on" src="img/stage-pushups.jpg" width="640" height="1385" alt="Stage 2, pushups, on a lime page: the pace dot moves around a box, rep 3 of 20.">
+                <img class="scr" src="img/stage-breathing.jpg" width="640" height="1385" decoding="async" alt="Stage 3, box breathing, on a purple page: hold for 2, with 1:54 left.">
+                <img class="scr" src="img/stage-bed.jpg" width="640" height="1385" decoding="async" alt="Stage 4, make the bed, on a mint page: 1:21 left on the timer.">
                 <span class="island" aria-hidden="true"></span>
               </div>
             </div>
@@ -610,77 +879,133 @@ a.store:active { transform: scale(.97); }
       <div class="fcard c3 glass" data-depth="12" aria-hidden="true">
         <p class="fc-eyebrow">Today · 4 stages</p>
         <div class="fc-stages">
-          <span style="--c: var(--yellow)"><span class="ms">water_drop</span></span>
-          <span style="--c: var(--lime)"><span class="ms">directions_run</span></span>
-          <span style="--c: var(--purple)"><span class="ms">air</span></span>
-          <span style="--c: var(--mint)"><span class="ms">bed</span></span>
+          <span style="--c: var(--yellow)" data-stage-chip><span class="ms">water_drop</span></span>
+          <span style="--c: var(--lime)" data-stage-chip class="is-on"><span class="ms">directions_run</span></span>
+          <span style="--c: var(--purple)" data-stage-chip><span class="ms">air</span></span>
+          <span style="--c: var(--mint)" data-stage-chip><span class="ms">bed</span></span>
         </div>
         <p class="fc-sub">About 6 min</p>
+      </div>
+
+      <div class="stage-track glass-dark" role="group" aria-label="Stages on the phone">
+        <button type="button" class="seg" data-seg style="--c: var(--yellow)" aria-label="Show stage 1, glass of water"><span class="bar"><span class="fill"></span></span></button>
+        <button type="button" class="seg is-on" data-seg style="--c: var(--lime)" aria-label="Show stage 2, pushups" aria-current="step"><span class="bar"><span class="fill"></span></span></button>
+        <button type="button" class="seg" data-seg style="--c: var(--purple)" aria-label="Show stage 3, box breathing"><span class="bar"><span class="fill"></span></span></button>
+        <button type="button" class="seg" data-seg style="--c: var(--mint)" aria-label="Show stage 4, make the bed"><span class="bar"><span class="fill"></span></span></button>
+        <button type="button" class="play" data-play aria-label="Pause the stages"><span class="ms" aria-hidden="true">pause</span></button>
       </div>
     </div>
   </section>
 
   <div class="night">
-    <section class="stages" id="stages">
+    <section class="timeline" id="stages" data-timeline aria-labelledby="tl-title">
       <div class="wrap">
         <div class="sec-head">
-          <p class="eyebrow">How a morning runs</p>
-          <h2 class="h2">Every stage gets the whole screen.</h2>
-          <p class="sec-lede">Each stage fills your phone with its own color, so you always know where you are. Reps follow a pacing dot, breathing follows a box, and timers count down in numbers you can read across the room.</p>
+          <p class="eyebrow reveal">How a morning runs</p>
+          <h2 class="h2 reveal-text" id="tl-title">One morning, one stage at a time.</h2>
+          <p class="sec-lede reveal reveal-2">A real morning in Daybreak, from 6:45 to 6:52. Each stage fills your screen with its own color, so you always know where you are.</p>
         </div>
-        <ol class="stage-row">
-          <li style="--tone: var(--yellow)">
-            <div class="phone">
-              <div class="pfront"><div class="pbezel"><div class="pscreen" style="--tone: var(--yellow)">
-                <img src="img/stage-water.jpg" width="640" height="1385" loading="lazy" alt="Stage 1, a glass of water, on a yellow page: tap Done when the glass is empty.">
-                <span class="island" aria-hidden="true"></span>
-              </div></div></div>
+
+        <div class="tl">
+          <div class="tl-stage">
+            <div class="tl-sticky">
+              <span class="tl-glow" aria-hidden="true"></span>
+              <p class="tl-clock glass-dark" aria-hidden="true"><span class="roll" data-clock><span class="r-cur">6:45</span></span><small>AM</small></p>
+              <div class="tl-phone phone">
+                <div class="pfront">
+                  <div class="pbezel">
+                    <div class="pscreen" data-tl-screens>
+                      <img class="scr is-on" src="img/stage-water.jpg" width="640" height="1385" loading="lazy" alt="6:45, a glass of water on a yellow page: tap Done when the glass is empty.">
+                      <img class="scr" src="img/stage-pushups.jpg" width="640" height="1385" loading="lazy" alt="6:46, pushups on a lime page: rep 3 of 20, with the pace dot on its box.">
+                      <img class="scr" src="img/stage-breathing.jpg" width="640" height="1385" loading="lazy" alt="6:47, box breathing on a purple page: hold for 2.">
+                      <img class="scr" src="img/stage-bed.jpg" width="640" height="1385" loading="lazy" alt="6:49, make the bed on a mint page: 1:21 left.">
+                      <img class="scr" src="img/stage-done.jpg" width="640" height="1385" loading="lazy" alt="6:52, routine complete: all four stages done in 7 minutes 19 seconds, and the streak ring counts the morning.">
+                      <span class="island" aria-hidden="true"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <p class="cap"><span class="dot"><span class="ms" aria-hidden="true">water_drop</span></span><span><b>Fuel</b> · Glass of water</span></p>
-          </li>
-          <li style="--tone: var(--lime)">
-            <div class="phone">
-              <div class="pfront"><div class="pbezel"><div class="pscreen" style="--tone: var(--lime)">
-                <img src="img/stage-pushups.jpg" width="640" height="1385" loading="lazy" alt="Stage 2, pushups, on a lime page: the pace dot moves around a box, rep 3 of 20.">
-                <span class="island" aria-hidden="true"></span>
-              </div></div></div>
-            </div>
-            <p class="cap"><span class="dot"><span class="ms" aria-hidden="true">directions_run</span></span><span><b>Exercise</b> · Pushups, paced</span></p>
-          </li>
-          <li style="--tone: var(--purple)">
-            <div class="phone">
-              <div class="pfront"><div class="pbezel"><div class="pscreen" style="--tone: var(--purple)">
-                <img src="img/stage-breathing.jpg" width="640" height="1385" loading="lazy" alt="Stage 3, box breathing, on a purple page: hold for 2, with 1:54 left.">
-                <span class="island" aria-hidden="true"></span>
-              </div></div></div>
-            </div>
-            <p class="cap"><span class="dot"><span class="ms" aria-hidden="true">air</span></span><span><b>Mindfulness</b> · Box breathing</span></p>
-          </li>
-          <li style="--tone: var(--mint)">
-            <div class="phone">
-              <div class="pfront"><div class="pbezel"><div class="pscreen" style="--tone: var(--mint)">
-                <img src="img/stage-bed.jpg" width="640" height="1385" loading="lazy" alt="Stage 4, make the bed, on a mint page: 1:21 left on the timer.">
-                <span class="island" aria-hidden="true"></span>
-              </div></div></div>
-            </div>
-            <p class="cap"><span class="dot"><span class="ms" aria-hidden="true">bed</span></span><span><b>Extra</b> · Make the bed</span></p>
-          </li>
-        </ol>
+          </div>
+
+          <div class="tl-track">
+            <div class="tl-rail" aria-hidden="true"><span class="tl-fill"></span><span class="tl-dot"></span></div>
+            <ol class="tl-list">
+              <li class="tl-item is-active" style="--c: var(--yellow)" data-color="#FFE45C" data-time="6:45">
+                <span class="tl-marker" aria-hidden="true"><span class="ms ms-stage">water_drop</span><span class="ms ms-done">check</span></span>
+                <div class="tl-body">
+                  <p class="tl-time"><time datetime="06:45">6:45</time><span class="tl-cat">Fuel</span></p>
+                  <h3>Glass of water</h3>
+                  <p class="tl-text">No timer on this one. Drink a full glass before the coffee, then tap Done.</p>
+                  <p class="tl-chip">About 1 min</p>
+                </div>
+              </li>
+              <li class="tl-item" style="--c: var(--lime)" data-color="#C8F53C" data-time="6:46">
+                <span class="tl-marker" aria-hidden="true"><span class="ms ms-stage">directions_run</span><span class="ms ms-done">check</span></span>
+                <div class="tl-body">
+                  <p class="tl-time"><time datetime="06:46">6:46</time><span class="tl-cat">Exercise</span></p>
+                  <h3>Pushups</h3>
+                  <p class="tl-text">A dot paces every rep, one every 3 seconds. At 20, the stage ticks itself off.</p>
+                  <p class="tl-chip">20 reps in 1 min</p>
+                </div>
+              </li>
+              <li class="tl-item" style="--c: var(--purple)" data-color="#B9A8FF" data-time="6:47">
+                <span class="tl-marker" aria-hidden="true"><span class="ms ms-stage">air</span><span class="ms ms-done">check</span></span>
+                <div class="tl-body">
+                  <p class="tl-time"><time datetime="06:47">6:47</time><span class="tl-cat">Mindfulness</span></p>
+                  <h3>Box breathing</h3>
+                  <p class="tl-text">Follow the dot around the box: in for 4, hold 4, out for 4, hold 4.</p>
+                  <p class="tl-chip">2 min</p>
+                </div>
+              </li>
+              <li class="tl-item" style="--c: var(--mint)" data-color="#8FEBD2" data-time="6:49">
+                <span class="tl-marker" aria-hidden="true"><span class="ms ms-stage">bed</span><span class="ms ms-done">check</span></span>
+                <div class="tl-body">
+                  <p class="tl-time"><time datetime="06:49">6:49</time><span class="tl-cat">Extra</span></p>
+                  <h3>Make the bed</h3>
+                  <p class="tl-text">A countdown big enough to read from across the room.</p>
+                  <p class="tl-chip">1 min 30 s</p>
+                </div>
+              </li>
+              <li class="tl-item" style="--c: var(--lime)" data-color="#C8F53C" data-time="6:52">
+                <span class="tl-marker" aria-hidden="true"><span class="ms ms-stage">check</span><span class="ms ms-done">check</span></span>
+                <div class="tl-body">
+                  <p class="tl-time"><time datetime="06:52">6:52</time><span class="tl-cat">Done</span></p>
+                  <h3>Routine complete</h3>
+                  <p class="tl-text">Every stage done, in about seven minutes. Your streak goes up by one, and tomorrow's reminder is already set.</p>
+                  <p class="tl-chip">Streak +1</p>
+                </div>
+              </li>
+            </ol>
+          </div>
+        </div>
       </div>
     </section>
 
     <section class="build" aria-labelledby="build-title">
       <div class="wrap">
-        <div class="lime-panel">
+        <div class="lime-panel reveal-panel">
           <div class="lp-copy">
             <p class="eyebrow">Set up in a minute</p>
             <h2 class="huge" id="build-title">Build it<br>once.</h2>
             <p>Choose your stages, then set a start time and the days. Every morning after that, Daybreak has it ready.</p>
           </div>
           <ol class="steps">
-            <li><span class="n">1</span><div><b>Choose your stages</b><p>Start with fuel, exercise and mindfulness, then add up to two extras, like making the bed.</p></div></li>
-            <li><span class="n">2</span><div><b>Set the time and days</b><p>A reminder arrives at your start time, and a nudge follows if you haven't started.</p></div></li>
-            <li><span class="n">3</span><div><b>Press start and follow</b><p>Reps, breaths and timers are guided on screen. Your streak keeps count.</p></div></li>
+            <li>
+              <span class="n">1</span>
+              <div><b>Choose your stages</b><p>Start with fuel, exercise and mindfulness, then add up to two extras, like making the bed.</p></div>
+              <span class="step-shot" aria-hidden="true"><span class="mini-phone"><span><img src="img/onboard-stages.jpg" width="640" height="1385" loading="lazy" alt=""></span></span></span>
+            </li>
+            <li>
+              <span class="n">2</span>
+              <div><b>Set the time and days</b><p>A reminder arrives at your start time, and a nudge follows if you haven't started.</p></div>
+              <span class="step-shot" aria-hidden="true"><span class="mini-phone"><span><img src="img/onboard-time.jpg" width="640" height="1385" loading="lazy" alt=""></span></span></span>
+            </li>
+            <li>
+              <span class="n">3</span>
+              <div><b>Press start and follow</b><p>Reps, breaths and timers are guided on screen. Your streak keeps count.</p></div>
+              <span class="step-shot" aria-hidden="true"><span class="mini-phone"><span><img src="img/onboard-ready.jpg" width="640" height="1385" loading="lazy" alt=""></span></span></span>
+            </li>
           </ol>
         </div>
       </div>
@@ -689,11 +1014,11 @@ a.store:active { transform: scale(.97); }
     <section class="features" id="features">
       <div class="wrap">
         <div class="sec-head">
-          <p class="eyebrow">Free, and complete</p>
-          <h2 class="h2">Everything you need to keep going.</h2>
+          <p class="eyebrow reveal">Free, and complete</p>
+          <h2 class="h2 reveal-text">Everything you need to keep going.</h2>
         </div>
         <div class="bento">
-          <article class="tile t-wide glass-dark">
+          <article class="tile t-wide glass-dark reveal" data-tilt="3">
             <div class="art">
               <div class="streak-art">
                 <div class="streak-num">
@@ -706,7 +1031,7 @@ a.store:active { transform: scale(.97); }
             <h3>A streak you can see</h3>
             <p>Your streak and a five-week grid of mornings, counted the same way on Today, in History and on your widget.</p>
           </article>
-          <article class="tile t-wide t-lime">
+          <article class="tile t-wide t-lime reveal reveal-2" data-tilt="3">
             <div class="art">
               <div class="widget-art" aria-hidden="true">
                 <div class="widget"><small>TODAY</small><b>6:45</b><span>4 stages · 6 min</span></div>
@@ -716,17 +1041,17 @@ a.store:active { transform: scale(.97); }
             <h3>Start from your Home Screen</h3>
             <p>Widgets show today's routine at a glance, and a Live Activity keeps your timer on the Lock Screen.</p>
           </article>
-          <article class="tile t-small glass-dark">
+          <article class="tile t-small glass-dark reveal" data-tilt="4">
             <span class="ic" style="--c: var(--purple)"><span class="ms" aria-hidden="true">favorite</span></span>
             <h3>Apple Health</h3>
             <p>Exercise stages are saved as workouts and breathing as mindful minutes.</p>
           </article>
-          <article class="tile t-small glass-dark">
+          <article class="tile t-small glass-dark reveal reveal-2" data-tilt="4">
             <span class="ic" style="--c: var(--mint)"><span class="ms" aria-hidden="true">cloud</span></span>
             <h3>Syncs with your iCloud</h3>
             <p>Your routine and history follow you across devices, in your own private iCloud.</p>
           </article>
-          <article class="tile t-small glass-dark">
+          <article class="tile t-small glass-dark reveal reveal-3" data-tilt="4">
             <span class="ic" style="--c: var(--yellow)"><span class="ms" aria-hidden="true">notifications</span></span>
             <h3>Reminders that help</h3>
             <p>One at your start time, a nudge if you haven't started, and an evening check if the day is still open.</p>
@@ -738,26 +1063,26 @@ a.store:active { transform: scale(.97); }
     <section class="pro" id="pro">
       <div class="wrap">
         <div class="sec-head">
-          <p class="eyebrow">Daybreak Pro</p>
-          <h2 class="h2">More room for your morning.</h2>
-          <p class="sec-lede">Pro adds the extras once your routine becomes a habit. Pay monthly, or once and keep it.</p>
+          <p class="eyebrow reveal">Daybreak Pro</p>
+          <h2 class="h2 reveal-text">More room for your morning.</h2>
+          <p class="sec-lede reveal reveal-2">Pro adds the extras once your routine becomes a habit. Pay monthly, or once and keep it.</p>
         </div>
         <div class="pro-grid">
           <ul class="pro-list">
-            <li class="glass-dark"><span class="ic" style="--c: var(--lime)"><span class="ms" aria-hidden="true">alarm</span></span><div><b>Wake-up alarm</b><p>Rings at your start time, even on silent, and opens straight into your routine.</p></div></li>
-            <li class="glass-dark"><span class="ic" style="--c: var(--mint)"><span class="ms" aria-hidden="true">trending_up</span></span><div><b>Reps that rise</b><p>Rep goals go up a little each week, at the same steady pace.</p></div></li>
-            <li class="glass-dark"><span class="ic" style="--c: var(--purple)"><span class="ms" aria-hidden="true">weekend</span></span><div><b>Rest days</b><p>One missed morning a week keeps your streak.</p></div></li>
-            <li class="glass-dark"><span class="ic" style="--c: var(--yellow)"><span class="ms" aria-hidden="true">calendar_month</span></span><div><b>A second routine</b><p>Weekends or evenings, each with its own stages and start time.</p></div></li>
-            <li class="glass-dark"><span class="ic" style="--c: var(--lime)"><span class="ms" aria-hidden="true">edit</span></span><div><b>Your own stages</b><p>Add anything the library doesn't have, and go past two extras.</p></div></li>
-            <li class="glass-dark"><span class="ic" style="--c: var(--mint)"><span class="ms" aria-hidden="true">history</span></span><div><b>Full history</b><p>Your consistency, each stage's record and every morning you've logged.</p></div></li>
+            <li class="glass-dark reveal" data-tilt="5"><span class="ic" style="--c: var(--lime)"><span class="ms" aria-hidden="true">alarm</span></span><div><b>Wake-up alarm</b><p>Rings at your start time, even on silent, and opens straight into your routine.</p></div></li>
+            <li class="glass-dark reveal reveal-2" data-tilt="5"><span class="ic" style="--c: var(--mint)"><span class="ms" aria-hidden="true">trending_up</span></span><div><b>Reps that rise</b><p>Rep goals go up a little each week, at the same steady pace.</p></div></li>
+            <li class="glass-dark reveal" data-tilt="5"><span class="ic" style="--c: var(--purple)"><span class="ms" aria-hidden="true">weekend</span></span><div><b>Rest days</b><p>One missed morning a week keeps your streak.</p></div></li>
+            <li class="glass-dark reveal reveal-2" data-tilt="5"><span class="ic" style="--c: var(--yellow)"><span class="ms" aria-hidden="true">calendar_month</span></span><div><b>A second routine</b><p>Weekends or evenings, each with its own stages and start time.</p></div></li>
+            <li class="glass-dark reveal" data-tilt="5"><span class="ic" style="--c: var(--lime)"><span class="ms" aria-hidden="true">edit</span></span><div><b>Your own stages</b><p>Add anything the library doesn't have, and go past two extras.</p></div></li>
+            <li class="glass-dark reveal reveal-2" data-tilt="5"><span class="ic" style="--c: var(--mint)"><span class="ms" aria-hidden="true">history</span></span><div><b>Full history</b><p>Your consistency, each stage's record and every morning you've logged.</p></div></li>
           </ul>
           <div class="plans">
-            <div class="plan glass-dark">
+            <div class="plan glass-dark reveal" data-tilt="4">
               <p class="plan-name">Monthly</p>
               <p class="plan-price"><b>$2.99</b><span>a month</span></p>
               <p class="plan-note">Renews monthly. Cancel anytime in Settings.</p>
             </div>
-            <div class="plan best">
+            <div class="plan best reveal reveal-2" data-tilt="4">
               <p class="plan-name">Lifetime <span class="badge">Best value</span></p>
               <p class="plan-price"><b>$19.99</b><span>once</span></p>
               <p class="plan-note">Pay once and keep it. No subscription.</p>
@@ -771,15 +1096,15 @@ a.store:active { transform: scale(.97); }
     <section class="final" id="get" aria-labelledby="get-title">
       <div class="wrap">
         <ul class="promises">
-          <li class="glass-dark"><span class="ms" aria-hidden="true">lock</span>No ads, no tracking</li>
-          <li class="glass-dark"><span class="ms" aria-hidden="true">check</span>No account needed</li>
-          <li class="glass-dark"><span class="ms" aria-hidden="true">cloud</span>Your mornings stay in your iCloud</li>
+          <li class="glass-dark reveal"><span class="ms" aria-hidden="true">lock</span>No ads, no tracking</li>
+          <li class="glass-dark reveal reveal-2"><span class="ms" aria-hidden="true">check</span>No account needed</li>
+          <li class="glass-dark reveal reveal-3"><span class="ms" aria-hidden="true">cloud</span>Your mornings stay in your iCloud</li>
         </ul>
         <div class="final-cta">
           <div class="final-sun" aria-hidden="true"></div>
-          <h2 class="h2" id="get-title">Tomorrow starts at 6:45.</h2>
-          <p>Set up your routine tonight. Daybreak will have it ready when you wake.</p>
-          <span class="store store-light" data-store role="img" aria-label="Coming soon to the App Store">
+          <h2 class="h2 reveal-text" id="get-title">Tomorrow starts at 6:45.</h2>
+          <p class="reveal">Set up your routine tonight. Daybreak will have it ready when you wake.</p>
+          <span class="store store-light reveal reveal-2" data-store role="img" aria-label="Coming soon to the App Store">
             <span class="ms" aria-hidden="true">phone_iphone</span>
             <span class="store-text" aria-hidden="true"><small data-store-line>Coming soon to the</small><b>App Store</b></span>
           </span>
@@ -828,14 +1153,96 @@ a.store:active { transform: scale(.97); }
   // Five weeks of mornings, Monday first: a 12-morning streak up to today, a Wednesday.
   const grid = document.querySelector("[data-grid]");
   if (grid) {
-    const weeks = ["1101111", "1111101", "1110111", "1111111", "11T....".replace(/\./g, "s")];
+    const weeks = ["1101111", "1111101", "1110111", "1111111", "11Tssss"];
     grid.innerHTML = weeks.join("").split("").map((d) =>
       `<i class="${d === "1" ? "on" : d === "T" ? "now" : d === "s" ? "soon" : ""}"></i>`).join("");
   }
 
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const narrow = window.matchMedia("(max-width: 760px)");
+  const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+
+  // The four stages, in the app's own colors.
+  const STAGES = [
+    { css: "#FFE45C", rgb: [1.0, 0.894, 0.361] },
+    { css: "#C8F53C", rgb: [0.784, 0.961, 0.235] },
+    { css: "#B9A8FF", rgb: [0.725, 0.659, 1.0] },
+    { css: "#8FEBD2", rgb: [0.561, 0.922, 0.824] }
+  ];
+
+  // A stack of screenshots that changes the way the app's pages do: going on,
+  // the top page flicks away to show the next; going back, it flicks back in.
+  function makeScreens(root) {
+    const shots = Array.from(root.querySelectorAll(".scr"));
+    let current = Math.max(0, shots.findIndex((shot) => shot.classList.contains("is-on")));
+    let busy = false;
+    let pending = -1;
+    shots.forEach((shot, i) => {
+      shot.classList.toggle("is-on", i === current);
+      shot.setAttribute("aria-hidden", i === current ? "false" : "true");
+    });
+    function go(index, direction) {
+      if (index === current) { pending = -1; return; }
+      if (busy) { pending = index; return; }
+      busy = true;
+      const from = shots[current];
+      const to = shots[index];
+      const forward = direction ? direction > 0 : index > current;
+      current = index;
+      let settled = false;
+      const settle = () => {
+        if (settled) return;
+        settled = true;
+        from.classList.remove("is-on", "is-next", "flick-out", "flick-in");
+        to.classList.remove("is-next", "flick-out", "flick-in");
+        to.classList.add("is-on");
+        from.setAttribute("aria-hidden", "true");
+        to.setAttribute("aria-hidden", "false");
+        busy = false;
+        if (pending >= 0 && pending !== current) {
+          const next = pending;
+          pending = -1;
+          go(next);
+        }
+        pending = -1;
+      };
+      if (forward) {
+        to.classList.add("is-next");
+        from.classList.add("flick-out");
+        from.addEventListener("animationend", settle, { once: true });
+      } else {
+        to.classList.add("flick-in");
+        to.addEventListener("animationend", settle, { once: true });
+      }
+      setTimeout(settle, 900);
+    }
+    return { go, get index() { return current; } };
+  }
+
+  // Rolls a line of text to a new value, like the app's timer digits.
+  function roll(el, text, direction) {
+    const current = el.querySelector(".r-cur");
+    if (current && current.textContent === text) return;
+    const next = document.createElement("span");
+    next.className = "r-cur" + (reduce ? "" : direction < 0 ? " r-in-down" : " r-in-up");
+    next.textContent = text;
+    if (current) {
+      if (reduce) {
+        current.remove();
+      } else {
+        current.className = direction < 0 ? "r-out-down" : "r-out-up";
+        current.addEventListener("animationend", () => current.remove(), { once: true });
+        setTimeout(() => current.remove(), 800);
+      }
+    }
+    el.appendChild(next);
+  }
+
+  const hero = document.querySelector(".hero");
   const scene = document.querySelector("[data-scene]");
+  const phoneWrap = document.querySelector("[data-hero-phone]");
   const phone = document.querySelector("[data-phone]");
+  const sunWrap = document.querySelector(".sun-wrap");
   const cards = Array.from(document.querySelectorAll("[data-depth]"));
 
   // Give the hero phone real thickness: a stack of edge layers behind the front.
@@ -852,7 +1259,8 @@ a.store:active { transform: scale(.97); }
     phone.insertBefore(back, phone.firstChild);
   }
 
-  // The liquid-glass sun: one WebGL pass, a glowing core inside a glass sphere.
+  // The liquid-glass sun: one WebGL pass, a glowing core inside a glass sphere,
+  // tinted by the stage on the phone.
   const canvas = document.querySelector("[data-sun]");
   const sun = canvas ? makeSun(canvas) : null;
   if (!sun && scene) scene.classList.add("no-webgl");
@@ -874,6 +1282,7 @@ a.store:active { transform: scale(.97); }
       uniform vec2 uRes;
       uniform float uTime;
       uniform vec2 uMouse;
+      uniform vec3 uTint;
       varying vec2 vUv;
 
       float hash(vec2 p) { p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
@@ -889,10 +1298,11 @@ a.store:active { transform: scale(.97); }
         vec2 q = (px - uRes * 0.5) / R;
         float d = length(q);
         float aa = 1.5 / R;
+        vec3 warm = vec3(1.0, 0.95, 0.62);
 
-        // Warm light around the sun.
+        // Light around the sun, in the stage's color, fading out before the canvas edge.
         float haloA = exp(-max(d - 1.0, 0.0) * 3.3) * 0.56 * (1.0 - smoothstep(1.2, 1.44, d));
-        vec3 haloCol = mix(vec3(1.0, 0.93, 0.50), vec3(0.80, 0.96, 0.30), smoothstep(1.0, 1.8, d));
+        vec3 haloCol = mix(mix(uTint, warm, 0.5), uTint, smoothstep(1.0, 1.8, d));
 
         vec3 col = vec3(0.0);
         float a = 0.0;
@@ -902,16 +1312,16 @@ a.store:active { transform: scale(.97); }
           vec3 V = vec3(0.0, 0.0, 1.0);
           float fres = pow(1.0 - N.z, 2.0);
 
-          // The liquid core, seen through the glass.
+          // The liquid core, seen through the glass: the stage's color at the
+          // edge, warming to sunlight in the middle.
           vec2 rq = q * (0.62 + 0.38 * N.z);
           vec2 flow = vec2(uTime * 0.045, -uTime * 0.035);
           float n = fbm(rq * 2.4 + flow + fbm(rq * 1.3 - flow) * 0.8);
           float core = 1.0 - smoothstep(0.0, 1.0, length(rq - vec2(-0.10, 0.12)) * 1.05);
-          vec3 lime = vec3(0.784, 0.961, 0.235);
-          vec3 sunY = vec3(1.0, 0.894, 0.361);
-          vec3 hot = vec3(1.0, 0.985, 0.90);
-          vec3 body = mix(lime, sunY, smoothstep(0.05, 0.75, core));
-          body = mix(body, hot, pow(core, 2.6) * 0.85);
+          vec3 coreCol = mix(uTint, warm, 0.45);
+          vec3 hot = vec3(1.0, 0.985, 0.92);
+          vec3 body = mix(uTint, coreCol, smoothstep(0.05, 0.75, core));
+          body = mix(body, hot, pow(core, 2.6) * 0.8);
           body *= 0.92 + 0.16 * n;
 
           // Thin-film shimmer at the rim, in the app's purple and mint.
@@ -963,6 +1373,7 @@ a.store:active { transform: scale(.97); }
     const uRes = gl.getUniformLocation(prog, "uRes");
     const uTime = gl.getUniformLocation(prog, "uTime");
     const uMouse = gl.getUniformLocation(prog, "uMouse");
+    const uTint = gl.getUniformLocation(prog, "uTint");
     let w = 1, h = 1;
     const resize = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, window.innerWidth < 760 ? 1.5 : 2);
@@ -973,17 +1384,185 @@ a.store:active { transform: scale(.97); }
     resize();
     return {
       resize,
-      draw(t, mx, my) {
+      draw(t, mx, my, tint) {
         gl.viewport(0, 0, w, h);
         gl.clearColor(0, 0, 0, 0);
         gl.clear(gl.COLOR_BUFFER_BIT);
         gl.uniform2f(uRes, w, h);
         gl.uniform1f(uTime, t);
         gl.uniform2f(uMouse, mx, my);
+        gl.uniform3f(uTint, tint[0], tint[1], tint[2]);
         gl.drawArrays(gl.TRIANGLES, 0, 3);
       }
     };
   }
+
+  // The hero phone runs through all four stages, and the sun follows its color.
+  const heroScreensEl = document.querySelector("[data-hero-screens]");
+  const heroScreens = heroScreensEl ? makeScreens(heroScreensEl) : null;
+  const segs = Array.from(document.querySelectorAll("[data-seg]"));
+  const chips = Array.from(document.querySelectorAll("[data-stage-chip]"));
+  const playBtn = document.querySelector("[data-play]");
+  const DWELL = 3.4;
+  let heroStage = heroScreens ? heroScreens.index : 1;
+  let dwell = -0.9;
+  let playing = !reduce;
+  let holding = false;
+  let kick = 0;
+  let sunDirty = true;
+  const tint = STAGES[heroStage].rgb.slice();
+  let tintTarget = STAGES[heroStage].rgb;
+
+  function showHeroStage(index, direction) {
+    if (!heroScreens) return;
+    heroStage = (index + STAGES.length) % STAGES.length;
+    heroScreens.go(heroStage, direction);
+    dwell = 0;
+    kick = reduce ? 0 : 1;
+    tintTarget = STAGES[heroStage].rgb;
+    if (reduce) { tint.splice(0, 3, ...tintTarget); sunDirty = true; }
+    if (hero) hero.style.setProperty("--stage", STAGES[heroStage].css);
+    segs.forEach((seg, i) => {
+      seg.classList.toggle("is-on", i === heroStage);
+      if (i === heroStage) seg.setAttribute("aria-current", "step"); else seg.removeAttribute("aria-current");
+      seg.style.setProperty("--p", reduce || !playing ? "1" : "0");
+    });
+    chips.forEach((chip, i) => chip.classList.toggle("is-on", i === heroStage));
+  }
+
+  function setPlaying(on) {
+    playing = on;
+    if (!playBtn) return;
+    playBtn.setAttribute("aria-label", on ? "Pause the stages" : "Play the stages");
+    playBtn.querySelector(".ms").textContent = on ? "pause" : "play_arrow";
+    if (!on) segs[heroStage] && segs[heroStage].style.setProperty("--p", "1");
+  }
+  setPlaying(playing);
+  if (playBtn) playBtn.addEventListener("click", () => { setPlaying(!playing); dwell = 0; });
+  segs.forEach((seg, i) => seg.addEventListener("click", () => {
+    if (i !== heroStage) showHeroStage(i, i > heroStage ? 1 : -1);
+  }));
+  if (phoneWrap) {
+    phoneWrap.addEventListener("click", () => showHeroStage(heroStage + 1, 1));
+    phoneWrap.addEventListener("pointerenter", (e) => { if (e.pointerType === "mouse") holding = true; });
+    phoneWrap.addEventListener("pointerleave", () => { holding = false; });
+  }
+
+  // The morning timeline: a dot travels down the day as you scroll, and the
+  // pinned phone flicks to each stage as the dot reaches it.
+  const timeline = document.querySelector("[data-timeline]");
+  let tl = null;
+  if (timeline) {
+    const track = timeline.querySelector(".tl-track");
+    const items = Array.from(timeline.querySelectorAll(".tl-item"));
+    const rail = timeline.querySelector(".tl-rail");
+    const fill = timeline.querySelector(".tl-fill");
+    const dot = timeline.querySelector(".tl-dot");
+    const clock = timeline.querySelector("[data-clock]");
+    const screensEl = timeline.querySelector("[data-tl-screens]");
+    const screens = screensEl ? makeScreens(screensEl) : null;
+    let markers = [0];
+    let railTop = 0;
+    let railLen = 1;
+    let target = 0;
+    let shown = 0;
+    let active = 0;
+    const probeY = () => window.innerHeight * (narrow.matches ? 0.72 : 0.52);
+
+    const layout = () => {
+      const base = track.getBoundingClientRect().top;
+      markers = items.map((item) => {
+        const r = item.querySelector(".tl-marker").getBoundingClientRect();
+        return r.top - base + r.height / 2;
+      });
+      railTop = markers[0];
+      railLen = Math.max(1, markers[markers.length - 1] - railTop);
+      rail.style.top = `${railTop}px`;
+      rail.style.height = `${railLen}px`;
+      const stops = items.map((item, i) => `${item.dataset.color} ${(((markers[i] - railTop) / railLen) * 100).toFixed(1)}%`);
+      fill.style.backgroundImage = `linear-gradient(180deg, ${stops.join(", ")})`;
+      fill.style.backgroundSize = `100% ${railLen}px`;
+    };
+
+    const setActive = (index) => {
+      const forward = index > active;
+      active = index;
+      items.forEach((item, i) => {
+        item.classList.toggle("is-active", i === index);
+        item.classList.toggle("is-past", i < index);
+      });
+      if (screens) screens.go(index, forward ? 1 : -1);
+      timeline.style.setProperty("--tl-stage", items[index].dataset.color);
+      if (clock) roll(clock, items[index].dataset.time, forward ? 1 : -1);
+      if (forward && !reduce) {
+        const marker = items[index].querySelector(".tl-marker");
+        marker.classList.remove("ping");
+        void marker.offsetWidth;
+        marker.classList.add("ping");
+      }
+    };
+
+    const read = () => {
+      const probe = probeY() - track.getBoundingClientRect().top;
+      target = clamp((probe - railTop) / railLen, 0, 1) * railLen;
+      let index = 0;
+      markers.forEach((y, i) => { if (probe >= y - 2) index = i; });
+      if (index !== active) setActive(index);
+    };
+
+    items.forEach((item) => item.addEventListener("click", () => {
+      const r = item.querySelector(".tl-marker").getBoundingClientRect();
+      window.scrollBy({ top: r.top + r.height / 2 - probeY() + 6, behavior: reduce ? "auto" : "smooth" });
+    }));
+
+    tl = {
+      layout,
+      read,
+      step(dt) {
+        shown += (target - shown) * (reduce ? 1 : 1 - Math.exp(-dt * 10));
+        if (Math.abs(target - shown) < 0.1) shown = target;
+        dot.style.transform = `translateY(${shown.toFixed(1)}px)`;
+        fill.style.height = `${shown.toFixed(1)}px`;
+      }
+    };
+    layout();
+    read();
+    tl.step(1);
+    if ("ResizeObserver" in window) new ResizeObserver(() => { layout(); read(); }).observe(track);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { layout(); read(); });
+  }
+
+  // Cards lean toward the pointer, with a light that follows it.
+  if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+    document.querySelectorAll("[data-tilt]").forEach((el) => {
+      const strength = Number(el.dataset.tilt) || 4;
+      el.addEventListener("pointermove", (e) => {
+        const r = el.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width;
+        const y = (e.clientY - r.top) / r.height;
+        el.style.setProperty("--mx", `${(x * 100).toFixed(1)}%`);
+        el.style.setProperty("--my", `${(y * 100).toFixed(1)}%`);
+        if (!reduce) {
+          el.style.setProperty("--ry", `${((x - 0.5) * strength).toFixed(2)}deg`);
+          el.style.setProperty("--rx", `${((0.5 - y) * strength).toFixed(2)}deg`);
+        }
+        el.classList.add("is-hover");
+      });
+      el.addEventListener("pointerleave", () => {
+        el.classList.remove("is-hover");
+        el.style.setProperty("--rx", "0deg");
+        el.style.setProperty("--ry", "0deg");
+      });
+    });
+  }
+
+  // The navigation turns to dark glass once the night is behind it.
+  const nav = document.querySelector(".nav");
+  const horizon = document.querySelector(".horizon");
+  const updateNav = () => {
+    if (!nav || !horizon) return;
+    nav.classList.toggle("is-dark", horizon.getBoundingClientRect().top < 56);
+  };
 
   // Pointer: the phone tilts toward it, the cards drift, the sun's highlight follows.
   const pointer = { x: 0, y: 0, tx: 0, ty: 0 };
@@ -993,41 +1572,73 @@ a.store:active { transform: scale(.97); }
     pointer.ty = (e.clientY / window.innerHeight) * 2 - 1;
   }, { passive: true });
 
-  const pose = (mx, my) => {
+  const pose = (mx, my, lift) => {
     if (!phone) return;
-    phone.style.setProperty("--ry", `${(-14 + mx * 10).toFixed(2)}deg`);
+    phone.style.setProperty("--ry", `${(-14 + mx * 10 - kick * 7).toFixed(2)}deg`);
     phone.style.setProperty("--rx", `${(7 - my * 7).toFixed(2)}deg`);
+    phone.style.setProperty("--rz", `${(3 + kick * 2.2).toFixed(2)}deg`);
+    phone.style.setProperty("--sy", `${(-lift * 40).toFixed(1)}px`);
     phone.style.setProperty("--glare", `${(-30 + mx * 34).toFixed(1)}%`);
     cards.forEach((card) => {
       const depth = Number(card.dataset.depth);
-      card.style.translate = `${(mx * depth).toFixed(1)}px ${(my * depth * 0.6).toFixed(1)}px`;
+      card.style.translate = `${(mx * depth).toFixed(1)}px ${(my * depth * 0.6 - lift * Math.abs(depth) * 4).toFixed(1)}px`;
     });
+    if (sunWrap) sunWrap.style.translate = `0 ${(-lift * 120).toFixed(1)}px`;
   };
 
   if (sun) {
-    const ro = new ResizeObserver(() => { sun.resize(); if (reduce) sun.draw(0, 0, 0); });
+    const ro = new ResizeObserver(() => { sun.resize(); sunDirty = true; });
     ro.observe(canvas);
   }
 
-  if (reduce) {
-    pose(0, 0);
-    if (sun) sun.draw(0, 0, 0);
-    return;
+  let heroVisible = true;
+  if (scene && "IntersectionObserver" in window) {
+    new IntersectionObserver(([entry]) => { heroVisible = entry.isIntersecting; }).observe(scene);
   }
+  let scrolled = true;
+  window.addEventListener("scroll", () => { scrolled = true; }, { passive: true });
+  window.addEventListener("resize", () => { scrolled = true; if (tl) tl.layout(); });
 
-  let visible = true;
-  if (scene) new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; }).observe(scene);
+  if (reduce) pose(0, 0, 0);
   const start = performance.now();
+  let last = start;
   const frame = (now) => {
     requestAnimationFrame(frame);
-    if (!visible) return;
+    const dt = Math.min(0.05, Math.max(0, (now - last) / 1000));
+    last = now;
+
+    if (scrolled) {
+      scrolled = false;
+      updateNav();
+      if (tl) tl.read();
+    }
+    if (tl) tl.step(dt);
+
+    if (!heroVisible || document.hidden) return;
     const t = (now - start) / 1000;
+
+    if (heroScreens && playing && !holding) {
+      dwell += dt;
+      if (dwell >= DWELL) showHeroStage(heroStage + 1, 1);
+      const seg = segs[heroStage];
+      if (seg) seg.style.setProperty("--p", clamp(dwell / DWELL, 0, 1).toFixed(3));
+    }
+
+    if (reduce) {
+      if (sun && sunDirty) { sun.draw(0, 0, 0, tint); sunDirty = false; }
+      return;
+    }
+
+    const k = 1 - Math.exp(-dt * 3.2);
+    for (let c = 0; c < 3; c++) tint[c] += (tintTarget[c] - tint[c]) * k;
+    kick *= Math.exp(-dt * 4.5);
     pointer.x += (pointer.tx - pointer.x) * 0.05;
     pointer.y += (pointer.ty - pointer.y) * 0.05;
     const mx = pointer.x + Math.sin(t * 0.5) * 0.12;
     const my = pointer.y + Math.cos(t * 0.4) * 0.1;
-    pose(mx, my);
-    if (sun) sun.draw(t, mx, my);
+    const lift = hero ? clamp(window.scrollY / Math.max(1, hero.offsetHeight), 0, 1) : 0;
+    pose(mx, my, lift);
+    if (sun) sun.draw(t, mx, my, tint);
   };
   requestAnimationFrame(frame);
 })();
