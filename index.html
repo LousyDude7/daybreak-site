@@ -18,7 +18,7 @@
 <style>
 /* Layout: a sunrise. A light sky where a liquid-glass sun, colored by the stage on
    screen, rises over a dark horizon behind a 3D phone; below the horizon it is night,
-   and a timeline walks one real morning, 6:45 to 6:51. */
+   and a timeline walks one morning from the start time the visitor picks. */
 @property --stage { syntax: "<color>"; inherits: true; initial-value: #C8F53C; }
 @property --tl-stage { syntax: "<color>"; inherits: true; initial-value: #FFE45C; }
 :root {
@@ -416,10 +416,78 @@ a.store:hover::after { translate: 120% 0; }
 .sec-head { max-width: 780px; }
 
 /* Timeline: one real morning, with the phone pinned beside it */
+/* Pick a start time: drag the sun along the morning */
+.pick { padding-block: clamp(28px, 4vw, 64px) clamp(56px, 7vw, 100px); }
+.pick-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: clamp(28px, 5vw, 72px); align-items: center; }
+.pick-card {
+  --x: 50%; --sky: #FFE45C; --thumb: 34px;
+  position: relative; overflow: clip;
+  padding: clamp(22px, 3vw, 32px); border-radius: 30px;
+  background:
+    radial-gradient(70% 120% at var(--x) 118%, color-mix(in srgb, var(--sky) 32%, transparent), transparent 70%),
+    linear-gradient(180deg, rgba(255, 255, 255, .085), rgba(255, 255, 255, .025));
+  border: 1px solid rgba(255, 255, 255, .09);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .09), 0 40px 90px -50px color-mix(in srgb, var(--sky) 60%, transparent);
+  -webkit-backdrop-filter: blur(24px) saturate(140%); backdrop-filter: blur(24px) saturate(140%);
+}
+.pick-top { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 14px 24px; }
+.pick-label { font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--night-muted); }
+.pick-time {
+  margin-top: 8px; display: flex; align-items: baseline; gap: 10px;
+  font-family: var(--display); font-weight: 700; font-size: clamp(58px, 7.4vw, 88px);
+  letter-spacing: -.045em; line-height: .92; color: var(--lime); font-variant-numeric: tabular-nums;
+}
+.pick-time small { font-size: .3em; letter-spacing: 0; color: var(--night-text); }
+.pick-done { text-align: right; }
+.pick-done-time { margin-top: 8px; font-family: var(--display); font-weight: 700; font-size: 26px; letter-spacing: -.02em; line-height: 1; font-variant-numeric: tabular-nums; }
+.pick-done-time small { font-size: 14px; font-weight: 600; letter-spacing: 0; color: var(--night-muted); }
+.sun-range { position: relative; margin-top: 30px; }
+.sun-range input { display: block; width: 100%; height: var(--thumb); margin: 0; background: transparent; cursor: grab; -webkit-appearance: none; appearance: none; }
+.sun-range input:active { cursor: grabbing; }
+.sun-range input:focus-visible { outline: none; }
+.sun-range input::-webkit-slider-runnable-track {
+  height: 10px; border-radius: 999px;
+  background: linear-gradient(90deg, rgba(185, 168, 255, .85) 0%, rgba(143, 235, 210, .85) 21%, rgba(255, 228, 92, .85) 43%, rgba(200, 245, 60, .85) 71%, rgba(200, 245, 60, .85) 100%);
+}
+.sun-range input::-moz-range-track {
+  height: 10px; border-radius: 999px;
+  background: linear-gradient(90deg, rgba(185, 168, 255, .85) 0%, rgba(143, 235, 210, .85) 21%, rgba(255, 228, 92, .85) 43%, rgba(200, 245, 60, .85) 71%, rgba(200, 245, 60, .85) 100%);
+}
+.sun-range input::-webkit-slider-thumb {
+  width: var(--thumb); height: var(--thumb); margin-top: calc((10px - var(--thumb)) / 2);
+  border: 0; border-radius: 50%; -webkit-appearance: none; appearance: none;
+  background: radial-gradient(circle at 38% 34%, #FFFDF2 0 16%, var(--sky) 64%);
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--sky) 22%, transparent), 0 0 34px 8px color-mix(in srgb, var(--sky) 62%, transparent);
+  transition: transform .25s var(--ease);
+}
+.sun-range input::-moz-range-thumb {
+  width: var(--thumb); height: var(--thumb); border: 0; border-radius: 50%;
+  background: radial-gradient(circle at 38% 34%, #FFFDF2 0 16%, var(--sky) 64%);
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--sky) 22%, transparent), 0 0 34px 8px color-mix(in srgb, var(--sky) 62%, transparent);
+  transition: transform .25s var(--ease);
+}
+.sun-range input:hover::-webkit-slider-thumb, .sun-range input:active::-webkit-slider-thumb { transform: scale(1.12); }
+.sun-range input:hover::-moz-range-thumb, .sun-range input:active::-moz-range-thumb { transform: scale(1.12); }
+.sun-range input:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px var(--night), 0 0 0 6px var(--night-text), 0 0 34px 8px color-mix(in srgb, var(--sky) 62%, transparent); }
+.sun-range input:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 3px var(--night), 0 0 0 6px var(--night-text), 0 0 34px 8px color-mix(in srgb, var(--sky) 62%, transparent); }
+.sun-ticks { position: relative; height: 18px; margin-top: 10px; font-size: 12px; font-weight: 600; color: var(--night-muted); font-variant-numeric: tabular-nums; }
+.sun-ticks span { position: absolute; top: 0; left: calc(var(--thumb) / 2 + (100% - var(--thumb)) * var(--f)); translate: -50% 0; white-space: nowrap; }
+.pick-quick { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 8px; }
+.pick-quick button {
+  min-height: 40px; padding: 0 16px; border-radius: 999px; cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, .1); background: rgba(255, 255, 255, .06); color: var(--night-text);
+  font-family: var(--body); font-weight: 600; font-size: 14.5px; font-variant-numeric: tabular-nums;
+  transition: background-color .3s ease, border-color .3s ease, color .3s ease, transform .2s ease;
+}
+.pick-quick button:hover { background: rgba(255, 255, 255, .12); }
+.pick-quick button:active { transform: scale(.96); }
+.pick-quick button[aria-pressed="true"] { background: var(--lime); border-color: var(--lime); color: var(--ink); }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
 .timeline {
   --tl-stage: #FFE45C;
   transition: --tl-stage .9s ease;
-  padding-block: clamp(28px, 4vw, 64px) clamp(90px, 10vw, 140px);
+  padding-block: clamp(24px, 3vw, 48px) clamp(90px, 10vw, 140px);
 }
 .tl {
   display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
@@ -704,6 +772,7 @@ a.store:hover::after { translate: 120% 0; }
 }
 @media (max-width: 860px) {
   .lime-panel { grid-template-columns: minmax(0, 1fr); }
+  .pick-grid { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* Phone */
@@ -758,6 +827,7 @@ a.store:hover::after { translate: 120% 0; }
 }
 @media (max-width: 560px) {
   .fcard { display: none; }
+  .pick-quick { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .steps li { grid-template-columns: 44px minmax(0, 1fr); }
   .step-shot { grid-column: 1 / -1; min-height: 0; height: 150px; margin: 0 -18px -18px; }
   .mini-phone { top: 18px; right: auto; left: calc(50% - 64px); width: 128px; transform: rotate(-4deg); }
@@ -784,7 +854,7 @@ a.store:hover::after { translate: 120% 0; }
       <span>Daybreak</span>
     </a>
     <ul class="nav-links">
-      <li><a href="#stages">How it works</a></li>
+      <li><a href="#start-time">How it works</a></li>
       <li><a href="#features">Features</a></li>
       <li><a href="support">Support</a></li>
     </ul>
@@ -812,7 +882,7 @@ a.store:hover::after { translate: 120% 0; }
           <span class="ms" aria-hidden="true">phone_iphone</span>
           <span class="store-text" aria-hidden="true"><small data-store-line>Coming soon to the</small><b>App Store</b></span>
         </span>
-        <a class="btn btn-glass glass" href="#stages">See how it works <span class="ms" aria-hidden="true">arrow_downward</span></a>
+        <a class="btn btn-glass glass" href="#start-time">See how it works <span class="ms" aria-hidden="true">arrow_downward</span></a>
       </div>
     </div>
 
@@ -855,7 +925,7 @@ a.store:hover::after { translate: 120% 0; }
 
       <div class="fcard c2 glass" data-depth="20" aria-hidden="true">
         <p class="fc-eyebrow">Wake-up alarm <span class="pro-chip">PRO</span></p>
-        <p class="fc-time">6:45 <small>AM</small></p>
+        <p class="fc-time"><span data-start-time>6:45</span> <small data-start-period>AM</small></p>
         <p class="fc-sub">Rings even on silent</p>
       </div>
 
@@ -881,19 +951,54 @@ a.store:hover::after { translate: 120% 0; }
   </section>
 
   <div class="night">
+    <section class="pick" id="start-time" aria-labelledby="pick-title">
+      <div class="wrap pick-grid">
+        <div class="sec-head">
+          <p class="eyebrow reveal">Make it yours</p>
+          <h2 class="h2 reveal-text" id="pick-title">When do you want to start your morning?</h2>
+          <p class="sec-lede reveal reveal-2">Drag the sun to pick a time. The morning below runs on it.</p>
+        </div>
+        <div class="pick-card reveal reveal-2" data-pick>
+          <div class="pick-top">
+            <div>
+              <p class="pick-label">Start time</p>
+              <p class="pick-time"><span data-start-time>6:45</span><small data-start-period>AM</small></p>
+            </div>
+            <div class="pick-done">
+              <p class="pick-label">Done by</p>
+              <p class="pick-done-time"><span data-done-time>7:05</span> <small data-done-period>AM</small></p>
+            </div>
+          </div>
+          <div class="sun-range">
+            <label class="sr-only" for="start-range">Start time</label>
+            <input id="start-range" type="range" min="240" max="660" step="5" value="405" aria-valuetext="6:45 AM" data-start-range>
+            <div class="sun-ticks" aria-hidden="true">
+              <span style="--f: 0">4 AM</span><span style="--f: .142857">5</span><span style="--f: .285714">6</span><span style="--f: .428571">7</span><span style="--f: .571429">8</span><span style="--f: .714286">9</span><span style="--f: .857143">10</span><span style="--f: 1">11 AM</span>
+            </div>
+          </div>
+          <div class="pick-quick" role="group" aria-label="Common start times">
+            <button type="button" data-quick="330" aria-pressed="false">5:30 AM</button>
+            <button type="button" data-quick="360" aria-pressed="false">6:00 AM</button>
+            <button type="button" data-quick="405" aria-pressed="true">6:45 AM</button>
+            <button type="button" data-quick="450" aria-pressed="false">7:30 AM</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="timeline" id="stages" data-timeline aria-labelledby="tl-title">
       <div class="wrap">
         <div class="sec-head">
           <p class="eyebrow reveal">How a morning runs</p>
           <h2 class="h2 reveal-text" id="tl-title">One morning, one stage at a time.</h2>
-          <p class="sec-lede reveal reveal-2">A morning in Daybreak, starting at 6:45. Each stage fills your screen with its own color, so you always know where you are.</p>
+          <p class="sec-lede reveal reveal-2">A morning in Daybreak, starting at <span data-start-time>6:45</span>. Each stage fills your screen with its own color, so you always know where you are.</p>
         </div>
 
         <div class="tl">
           <div class="tl-stage">
             <div class="tl-sticky">
               <span class="tl-glow" aria-hidden="true"></span>
-              <p class="tl-clock glass-dark" aria-hidden="true"><span class="roll" data-clock><span class="r-cur">6:45</span></span><small>AM</small></p>
+              <p class="tl-clock glass-dark" aria-hidden="true"><span class="roll" data-clock><span class="r-cur">6:45</span></span><small data-clock-period>AM</small></p>
               <div class="tl-phone phone">
                 <div class="phone3d" data-phone3d>
                 <div class="pfront">
@@ -1033,7 +1138,7 @@ a.store:hover::after { translate: 120% 0; }
           <article class="tile t-wide t-lime reveal reveal-2" data-tilt="3">
             <div class="art">
               <div class="widget-art" aria-hidden="true">
-                <div class="widget"><small>TODAY</small><b>6:45</b><span>4 stages · 6 min</span></div>
+                <div class="widget"><small>TODAY</small><b data-start-time>6:45</b><span>4 stages · 6 min</span></div>
                 <div class="live"><span class="ico"><span class="ms">directions_run</span></span>Pushups <em>12 of 20</em></div>
               </div>
             </div>
@@ -1068,7 +1173,7 @@ a.store:hover::after { translate: 120% 0; }
         </ul>
         <div class="final-cta">
           <div class="final-sun" aria-hidden="true"></div>
-          <h2 class="h2 reveal-text" id="get-title">Tomorrow starts at 6:45.</h2>
+          <h2 class="h2 reveal-text" id="get-title">Tomorrow starts at <span data-start-time>6:45</span>.</h2>
           <p class="reveal">Set up your routine tonight. Daybreak will have it ready when you wake.</p>
           <span class="store store-light reveal reveal-2" data-store role="img" aria-label="Coming soon to the App Store">
             <span class="ms" aria-hidden="true">phone_iphone</span>
@@ -1127,6 +1232,13 @@ a.store:hover::after { translate: 120% 0; }
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const narrow = window.matchMedia("(max-width: 760px)");
   const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+
+  // Minutes after midnight as the clock reads them: 405 is 6:45 AM.
+  const clockText = (mins) => {
+    const h = Math.floor(mins / 60) % 24;
+    const m = mins % 60;
+    return { time: `${((h + 11) % 12) + 1}:${String(m).padStart(2, "0")}`, period: h < 12 ? "AM" : "PM" };
+  };
 
   // The four stages, in the app's own colors.
   const STAGES = [
@@ -1425,6 +1537,7 @@ a.store:hover::after { translate: 120% 0; }
     const fill = timeline.querySelector(".tl-fill");
     const dot = timeline.querySelector(".tl-dot");
     const clock = timeline.querySelector("[data-clock]");
+    const clockPeriod = timeline.querySelector("[data-clock-period]");
     const screensEl = timeline.querySelector("[data-tl-screens]");
     const screens = screensEl ? makeScreens(screensEl) : null;
     let markers = [0];
@@ -1467,6 +1580,7 @@ a.store:hover::after { translate: 120% 0; }
       if (screens) screens.go(index, forward ? 1 : -1);
       timeline.style.setProperty("--tl-stage", items[index].dataset.color);
       if (clock) roll(clock, items[index].dataset.time, forward ? 1 : -1);
+      if (clockPeriod) clockPeriod.textContent = items[index].dataset.period || "AM";
       if (forward && !reduce) {
         const marker = items[index].querySelector(".tl-marker");
         marker.classList.remove("ping");
@@ -1489,6 +1603,17 @@ a.store:hover::after { translate: 120% 0; }
     }));
 
     tl = {
+      // Each step is five minutes after the last, from the picked start.
+      setStart(mins) {
+        items.forEach((item, i) => {
+          const t = clockText(mins + i * 5);
+          item.dataset.time = t.time;
+          item.dataset.period = t.period;
+        });
+        const current = clock && clock.querySelector(".r-cur");
+        if (current) current.textContent = items[active].dataset.time;
+        if (clockPeriod) clockPeriod.textContent = items[active].dataset.period;
+      },
       layout,
       read,
       step(dt) {
@@ -1522,6 +1647,72 @@ a.store:hover::after { translate: 120% 0; }
     tl.step(1);
     if ("ResizeObserver" in window) new ResizeObserver(() => { layout(); read(); }).observe(track);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { layout(); read(); });
+  }
+
+  // The start time the visitor picks, which every time on the page follows.
+  // Remembered in this browser for next time.
+  const pick = document.querySelector("[data-pick]");
+  if (pick) {
+    const range = pick.querySelector("[data-start-range]");
+    const doneTime = pick.querySelector("[data-done-time]");
+    const donePeriod = pick.querySelector("[data-done-period]");
+    const quick = Array.from(pick.querySelectorAll("[data-quick]"));
+    const MIN = Number(range.min);
+    const MAX = Number(range.max);
+    const KEY = "daybreak.startMinutes";
+    // The morning sky along the bar, in the app's colors: purple at 4,
+    // mint at 5:30, yellow at 7, lime from 9.
+    const SKY = [[240, [185, 168, 255]], [330, [143, 235, 210]], [420, [255, 228, 92]], [540, [200, 245, 60]], [660, [200, 245, 60]]];
+    const skyAt = (mins) => {
+      for (let i = 1; i < SKY.length; i++) {
+        const [m0, c0] = SKY[i - 1];
+        const [m1, c1] = SKY[i];
+        if (mins <= m1) {
+          const t = (mins - m0) / (m1 - m0);
+          return `rgb(${c0.map((c, k) => Math.round(c + (c1[k] - c) * t)).join(", ")})`;
+        }
+      }
+      return "rgb(200, 245, 60)";
+    };
+    const apply = (mins, save) => {
+      const start = clockText(mins);
+      const done = clockText(mins + 20);
+      document.querySelectorAll("[data-start-time]").forEach((el) => { el.textContent = start.time; });
+      document.querySelectorAll("[data-start-period]").forEach((el) => { el.textContent = start.period; });
+      doneTime.textContent = done.time;
+      donePeriod.textContent = done.period;
+      range.value = String(mins);
+      range.setAttribute("aria-valuetext", `${start.time} ${start.period}`);
+      pick.style.setProperty("--x", `${(((mins - MIN) / (MAX - MIN)) * 100).toFixed(1)}%`);
+      pick.style.setProperty("--sky", skyAt(mins));
+      quick.forEach((b) => b.setAttribute("aria-pressed", Number(b.dataset.quick) === mins ? "true" : "false"));
+      if (tl) tl.setStart(mins);
+      if (save) { try { localStorage.setItem(KEY, String(mins)); } catch (e) { /* not kept */ } }
+    };
+    let first = 405;
+    try {
+      const saved = Number(localStorage.getItem(KEY));
+      if (saved >= MIN && saved <= MAX && saved % 5 === 0) first = saved;
+    } catch (e) { /* the default stands */ }
+    apply(first, false);
+    range.addEventListener("input", () => apply(Number(range.value), true));
+
+    // A quick pick glides the sun over rather than jumping.
+    let glide = 0;
+    quick.forEach((button) => button.addEventListener("click", () => {
+      const to = Number(button.dataset.quick);
+      const from = Number(range.value);
+      cancelAnimationFrame(glide);
+      if (reduce || from === to) { apply(to, true); return; }
+      const t0 = performance.now();
+      const step = (now) => {
+        const t = Math.min(1, (now - t0) / 480);
+        const eased = 1 - Math.pow(1 - t, 3);
+        apply(Math.round((from + (to - from) * eased) / 5) * 5, t === 1);
+        if (t < 1) glide = requestAnimationFrame(step);
+      };
+      glide = requestAnimationFrame(step);
+    }));
   }
 
   // Cards lean toward the pointer, with a light that follows it.
