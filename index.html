@@ -416,72 +416,80 @@ a.store:hover::after { translate: 120% 0; }
 .sec-head { max-width: 780px; }
 
 /* Timeline: one real morning, with the phone pinned beside it */
-/* Pick a start time: drag the sun along the morning */
+/* Pick a start time: drag the sun up the morning sky */
 .pick { padding-block: clamp(28px, 4vw, 64px) clamp(56px, 7vw, 100px); }
 .pick-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: clamp(28px, 5vw, 72px); align-items: center; }
 .pick-card {
-  --x: 50%; --sky: #FFE45C; --thumb: 34px;
+  --x: 50%; --sky: #FFE45C;
   position: relative; overflow: clip;
-  padding: clamp(22px, 3vw, 32px); border-radius: 30px;
+  padding: clamp(22px, 3vw, 30px); border-radius: 30px;
   background:
-    radial-gradient(70% 120% at var(--x) 118%, color-mix(in srgb, var(--sky) 32%, transparent), transparent 70%),
+    radial-gradient(70% 120% at var(--x) 118%, color-mix(in srgb, var(--sky) 26%, transparent), transparent 70%),
     linear-gradient(180deg, rgba(255, 255, 255, .085), rgba(255, 255, 255, .025));
   border: 1px solid rgba(255, 255, 255, .09);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .09), 0 40px 90px -50px color-mix(in srgb, var(--sky) 60%, transparent);
   -webkit-backdrop-filter: blur(24px) saturate(140%); backdrop-filter: blur(24px) saturate(140%);
 }
-.pick-top { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 14px 24px; }
+.pick-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .pick-label { font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--night-muted); }
+.pick-done {
+  padding: 6px 12px; border-radius: 999px;
+  font-size: 13px; font-weight: 600; color: var(--night-muted); font-variant-numeric: tabular-nums;
+  background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .08);
+}
+.pick-done b { color: var(--night-text); font-weight: 700; }
 .pick-time {
-  margin-top: 8px; display: flex; align-items: baseline; gap: 10px;
+  margin-top: 10px; display: flex; align-items: baseline; gap: 10px;
   font-family: var(--display); font-weight: 700; font-size: clamp(58px, 7.4vw, 88px);
   letter-spacing: -.045em; line-height: .92; color: var(--lime); font-variant-numeric: tabular-nums;
 }
 .pick-time small { font-size: .3em; letter-spacing: 0; color: var(--night-text); }
-.pick-done { text-align: right; }
-.pick-done-time { margin-top: 8px; font-family: var(--display); font-weight: 700; font-size: 26px; letter-spacing: -.02em; line-height: 1; font-variant-numeric: tabular-nums; }
-.pick-done-time small { font-size: 14px; font-weight: 600; letter-spacing: 0; color: var(--night-muted); }
-.sun-range { position: relative; margin-top: 30px; }
-.sun-range input { display: block; width: 100%; height: var(--thumb); margin: 0; background: transparent; cursor: grab; -webkit-appearance: none; appearance: none; }
-.sun-range input:active { cursor: grabbing; }
-.sun-range input:focus-visible { outline: none; }
-.sun-range input::-webkit-slider-runnable-track {
-  height: 10px; border-radius: 999px;
-  background: linear-gradient(90deg, rgba(185, 168, 255, .85) 0%, rgba(143, 235, 210, .85) 21%, rgba(255, 228, 92, .85) 43%, rgba(200, 245, 60, .85) 71%, rgba(200, 245, 60, .85) 100%);
+
+/* The sky: the sun rises along its path as the time gets later */
+.sky {
+  --f: .3571; --h: .4314; --stars: 0;
+  position: relative; margin-top: 24px; padding-top: 18px;
+  border-radius: 22px; overflow: hidden;
+  background: linear-gradient(0deg, color-mix(in srgb, var(--sky) 16%, transparent), transparent 80%), rgba(6, 7, 10, .35);
+  border: 1px solid rgba(255, 255, 255, .07);
+  cursor: grab; touch-action: pan-y; -webkit-user-select: none; user-select: none;
 }
-.sun-range input::-moz-range-track {
-  height: 10px; border-radius: 999px;
-  background: linear-gradient(90deg, rgba(185, 168, 255, .85) 0%, rgba(143, 235, 210, .85) 21%, rgba(255, 228, 92, .85) 43%, rgba(200, 245, 60, .85) 71%, rgba(200, 245, 60, .85) 100%);
+.sky.is-dragging { cursor: grabbing; }
+.sky-air { position: relative; height: clamp(118px, 13vw, 150px); margin-inline: 30px; clip-path: inset(-300px -60px 0 -60px); }
+.sky-path { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.sky-path polyline { fill: none; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.sky-path-all { stroke: rgba(255, 255, 255, .2); stroke-width: 1.5; stroke-dasharray: 1 7; }
+.sky-path-done { stroke: var(--sky); stroke-width: 2; opacity: .75; }
+.star {
+  position: absolute; left: var(--sx); top: var(--sy);
+  width: 2px; height: 2px; border-radius: 50%; background: #fff;
+  box-shadow: 0 0 6px 1px rgba(255, 255, 255, .55);
+  opacity: calc(var(--stars) * .9);
+  transition: opacity .5s ease;
+  animation: star-twinkle 3.4s ease-in-out var(--d, 0s) infinite;
 }
-.sun-range input::-webkit-slider-thumb {
-  width: var(--thumb); height: var(--thumb); margin-top: calc((10px - var(--thumb)) / 2);
-  border: 0; border-radius: 50%; -webkit-appearance: none; appearance: none;
-  background: radial-gradient(circle at 38% 34%, #FFFDF2 0 16%, var(--sky) 64%);
-  box-shadow: 0 0 0 6px color-mix(in srgb, var(--sky) 22%, transparent), 0 0 34px 8px color-mix(in srgb, var(--sky) 62%, transparent);
-  transition: transform .25s var(--ease);
+@keyframes star-twinkle { 50% { scale: .4; } }
+.sun-glow, .sun {
+  position: absolute; left: calc(var(--f) * 100%); bottom: calc(var(--h) * 100%);
+  translate: -50% 50%; border-radius: 50%; pointer-events: none;
 }
-.sun-range input::-moz-range-thumb {
-  width: var(--thumb); height: var(--thumb); border: 0; border-radius: 50%;
-  background: radial-gradient(circle at 38% 34%, #FFFDF2 0 16%, var(--sky) 64%);
-  box-shadow: 0 0 0 6px color-mix(in srgb, var(--sky) 22%, transparent), 0 0 34px 8px color-mix(in srgb, var(--sky) 62%, transparent);
-  transition: transform .25s var(--ease);
+.sun-glow { width: 260px; height: 260px; background: radial-gradient(closest-side, color-mix(in srgb, var(--sky) 40%, transparent), transparent); }
+.sun {
+  width: 38px; height: 38px;
+  background: radial-gradient(circle at 38% 34%, #FFFDF2 0 18%, var(--sky) 66%);
+  box-shadow: 0 0 0 7px color-mix(in srgb, var(--sky) 18%, transparent), 0 0 40px 10px color-mix(in srgb, var(--sky) 55%, transparent);
+  transition: scale .25s var(--ease);
 }
-.sun-range input:hover::-webkit-slider-thumb, .sun-range input:active::-webkit-slider-thumb { transform: scale(1.12); }
-.sun-range input:hover::-moz-range-thumb, .sun-range input:active::-moz-range-thumb { transform: scale(1.12); }
-.sun-range input:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px var(--night), 0 0 0 6px var(--night-text), 0 0 34px 8px color-mix(in srgb, var(--sky) 62%, transparent); }
-.sun-range input:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 3px var(--night), 0 0 0 6px var(--night-text), 0 0 34px 8px color-mix(in srgb, var(--sky) 62%, transparent); }
-.sun-ticks { position: relative; height: 18px; margin-top: 10px; font-size: 12px; font-weight: 600; color: var(--night-muted); font-variant-numeric: tabular-nums; }
-.sun-ticks span { position: absolute; top: 0; left: calc(var(--thumb) / 2 + (100% - var(--thumb)) * var(--f)); translate: -50% 0; white-space: nowrap; }
-.pick-quick { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 8px; }
-.pick-quick button {
-  min-height: 40px; padding: 0 16px; border-radius: 999px; cursor: pointer;
-  border: 1px solid rgba(255, 255, 255, .1); background: rgba(255, 255, 255, .06); color: var(--night-text);
-  font-family: var(--body); font-weight: 600; font-size: 14.5px; font-variant-numeric: tabular-nums;
-  transition: background-color .3s ease, border-color .3s ease, color .3s ease, transform .2s ease;
+.sky:hover .sun, .sky.is-dragging .sun { scale: 1.12; }
+.sky:has(input:focus-visible) .sun { outline: 2px solid var(--night-text); outline-offset: 6px; }
+.sky-ground {
+  position: relative; height: 38px;
+  border-top: 1px solid rgba(255, 255, 255, .16);
+  background: rgba(14, 15, 18, .6);
 }
-.pick-quick button:hover { background: rgba(255, 255, 255, .12); }
-.pick-quick button:active { transform: scale(.96); }
-.pick-quick button[aria-pressed="true"] { background: var(--lime); border-color: var(--lime); color: var(--ink); }
+.sky-ticks { position: absolute; inset: 0 30px; }
+.sky-ticks i { position: absolute; top: 0; left: calc(var(--t) * 100%); width: 1px; height: 6px; translate: -50% 0; background: rgba(255, 255, 255, .22); }
+.sky-ticks span { position: absolute; top: 13px; left: calc(var(--t) * 100%); translate: -50% 0; font-size: 12px; font-weight: 600; color: var(--night-muted); white-space: nowrap; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 
 .timeline {
@@ -827,7 +835,6 @@ a.store:hover::after { translate: 120% 0; }
 }
 @media (max-width: 560px) {
   .fcard { display: none; }
-  .pick-quick { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .steps li { grid-template-columns: 44px minmax(0, 1fr); }
   .step-shot { grid-column: 1 / -1; min-height: 0; height: 150px; margin: 0 -18px -18px; }
   .mini-phone { top: 18px; right: auto; left: calc(50% - 64px); width: 128px; transform: rotate(-4deg); }
@@ -835,7 +842,7 @@ a.store:hover::after { translate: 120% 0; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .sun-wrap, .phone-wrap, .fcard, .spark { animation: none; }
+  .sun-wrap, .phone-wrap, .fcard, .spark, .star { animation: none; }
   .scr.flick-out { animation: fade-out .3s ease forwards; }
   .scr.flick-in { animation: fade-in .3s ease forwards; }
   .r-in-up, .r-in-down, .r-out-up, .r-out-down, .tl-marker.ping::after { animation: none; }
@@ -960,27 +967,36 @@ a.store:hover::after { translate: 120% 0; }
         </div>
         <div class="pick-card reveal reveal-2" data-pick>
           <div class="pick-top">
-            <div>
-              <p class="pick-label">Start time</p>
-              <p class="pick-time"><span data-start-time>6:45</span><small data-start-period>AM</small></p>
-            </div>
-            <div class="pick-done">
-              <p class="pick-label">Done by</p>
-              <p class="pick-done-time"><span data-done-time>7:05</span> <small data-done-period>AM</small></p>
-            </div>
+            <p class="pick-label">Start time</p>
+            <p class="pick-done">Done by <b><span data-done-time>7:05</span> <span data-done-period>AM</span></b></p>
           </div>
-          <div class="sun-range">
+          <p class="pick-time"><span data-start-time>6:45</span><small data-start-period>AM</small></p>
+          <div class="sky" data-sky>
             <label class="sr-only" for="start-range">Start time</label>
-            <input id="start-range" type="range" min="240" max="660" step="5" value="405" aria-valuetext="6:45 AM" data-start-range>
-            <div class="sun-ticks" aria-hidden="true">
-              <span style="--f: 0">4 AM</span><span style="--f: .142857">5</span><span style="--f: .285714">6</span><span style="--f: .428571">7</span><span style="--f: .571429">8</span><span style="--f: .714286">9</span><span style="--f: .857143">10</span><span style="--f: 1">11 AM</span>
+            <input class="sr-only" id="start-range" type="range" min="240" max="660" step="5" value="405" aria-valuetext="6:45 AM" data-start-range>
+            <div class="sky-air" aria-hidden="true">
+              <span class="star" style="--sx: 5%; --sy: 22%; --d: -.4s"></span>
+              <span class="star" style="--sx: 12%; --sy: 52%; --d: -1.8s"></span>
+              <span class="star" style="--sx: 19%; --sy: 12%; --d: -2.6s"></span>
+              <span class="star" style="--sx: 28%; --sy: 34%; --d: -.9s"></span>
+              <span class="star" style="--sx: 37%; --sy: 8%; --d: -3.1s"></span>
+              <span class="star" style="--sx: 47%; --sy: 26%; --d: -1.2s"></span>
+              <span class="star" style="--sx: 58%; --sy: 6%; --d: -2.2s"></span>
+              <span class="star" style="--sx: 69%; --sy: 18%; --d: -.2s"></span>
+              <span class="star" style="--sx: 83%; --sy: 30%; --d: -2.9s"></span>
+              <svg class="sky-path" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+                <polyline class="sky-path-all" points="" data-path-all></polyline>
+                <polyline class="sky-path-done" points="" data-path-done></polyline>
+              </svg>
+              <span class="sun-glow"></span>
+              <span class="sun"></span>
             </div>
-          </div>
-          <div class="pick-quick" role="group" aria-label="Common start times">
-            <button type="button" data-quick="330" aria-pressed="false">5:30 AM</button>
-            <button type="button" data-quick="360" aria-pressed="false">6:00 AM</button>
-            <button type="button" data-quick="405" aria-pressed="true">6:45 AM</button>
-            <button type="button" data-quick="450" aria-pressed="false">7:30 AM</button>
+            <div class="sky-ground" aria-hidden="true">
+              <div class="sky-ticks">
+                <i style="--t: 0"></i><i style="--t: .142857"></i><i style="--t: .285714"></i><i style="--t: .428571"></i><i style="--t: .571429"></i><i style="--t: .714286"></i><i style="--t: .857143"></i><i style="--t: 1"></i>
+                <span style="--t: 0">4 AM</span><span style="--t: 1">11 AM</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1650,18 +1666,21 @@ a.store:hover::after { translate: 120% 0; }
   }
 
   // The start time the visitor picks, which every time on the page follows.
-  // Remembered in this browser for next time.
+  // Drag the sun, or use the arrow keys. Remembered in this browser.
   const pick = document.querySelector("[data-pick]");
   if (pick) {
     const range = pick.querySelector("[data-start-range]");
+    const sky = pick.querySelector("[data-sky]");
+    const air = pick.querySelector(".sky-air");
+    const pathAll = pick.querySelector("[data-path-all]");
+    const pathDone = pick.querySelector("[data-path-done]");
     const doneTime = pick.querySelector("[data-done-time]");
     const donePeriod = pick.querySelector("[data-done-period]");
-    const quick = Array.from(pick.querySelectorAll("[data-quick]"));
     const MIN = Number(range.min);
     const MAX = Number(range.max);
     const KEY = "daybreak.startMinutes";
-    // The morning sky along the bar, in the app's colors: purple at 4,
-    // mint at 5:30, yellow at 7, lime from 9.
+    // The morning sky, in the app's colors: purple at 4, mint at 5:30,
+    // yellow at 7, lime from 9.
     const SKY = [[240, [185, 168, 255]], [330, [143, 235, 210]], [420, [255, 228, 92]], [540, [200, 245, 60]], [660, [200, 245, 60]]];
     const skyAt = (mins) => {
       for (let i = 1; i < SKY.length; i++) {
@@ -1674,18 +1693,35 @@ a.store:hover::after { translate: 120% 0; }
       }
       return "rgb(200, 245, 60)";
     };
+    // How high the sun stands, from just under the horizon at 4 to high at 11.
+    const sunHeight = (f) => -0.05 + 0.9 * Math.sin(f * Math.PI / 2);
+    const pathPoints = (to) => {
+      const n = Math.max(1, Math.round(to * 100));
+      const points = [];
+      for (let i = 0; i <= n; i++) {
+        const g = (i / n) * to;
+        points.push(`${(g * 1000).toFixed(1)},${(1000 - sunHeight(g) * 1000).toFixed(1)}`);
+      }
+      return points.join(" ");
+    };
+    pathAll.setAttribute("points", pathPoints(1));
+
     const apply = (mins, save) => {
       const start = clockText(mins);
       const done = clockText(mins + 20);
+      const f = (mins - MIN) / (MAX - MIN);
       document.querySelectorAll("[data-start-time]").forEach((el) => { el.textContent = start.time; });
       document.querySelectorAll("[data-start-period]").forEach((el) => { el.textContent = start.period; });
       doneTime.textContent = done.time;
       donePeriod.textContent = done.period;
       range.value = String(mins);
       range.setAttribute("aria-valuetext", `${start.time} ${start.period}`);
-      pick.style.setProperty("--x", `${(((mins - MIN) / (MAX - MIN)) * 100).toFixed(1)}%`);
+      pick.style.setProperty("--x", `${(f * 100).toFixed(1)}%`);
       pick.style.setProperty("--sky", skyAt(mins));
-      quick.forEach((b) => b.setAttribute("aria-pressed", Number(b.dataset.quick) === mins ? "true" : "false"));
+      sky.style.setProperty("--f", f.toFixed(4));
+      sky.style.setProperty("--h", sunHeight(f).toFixed(4));
+      sky.style.setProperty("--stars", clamp((360 - mins) / 120, 0, 1).toFixed(3));
+      pathDone.setAttribute("points", pathPoints(f));
       if (tl) tl.setStart(mins);
       if (save) { try { localStorage.setItem(KEY, String(mins)); } catch (e) { /* not kept */ } }
     };
@@ -1695,24 +1731,34 @@ a.store:hover::after { translate: 120% 0; }
       if (saved >= MIN && saved <= MAX && saved % 5 === 0) first = saved;
     } catch (e) { /* the default stands */ }
     apply(first, false);
+
+    // Keyboard and assistive tech use the slider underneath.
     range.addEventListener("input", () => apply(Number(range.value), true));
 
-    // A quick pick glides the sun over rather than jumping.
-    let glide = 0;
-    quick.forEach((button) => button.addEventListener("click", () => {
-      const to = Number(button.dataset.quick);
-      const from = Number(range.value);
-      cancelAnimationFrame(glide);
-      if (reduce || from === to) { apply(to, true); return; }
-      const t0 = performance.now();
-      const step = (now) => {
-        const t = Math.min(1, (now - t0) / 480);
-        const eased = 1 - Math.pow(1 - t, 3);
-        apply(Math.round((from + (to - from) * eased) / 5) * 5, t === 1);
-        if (t < 1) glide = requestAnimationFrame(step);
-      };
-      glide = requestAnimationFrame(step);
-    }));
+    // Pointers drag the sun across the sky; a vertical swipe still scrolls.
+    const fromX = (clientX) => {
+      const r = air.getBoundingClientRect();
+      const f = clamp((clientX - r.left) / r.width, 0, 1);
+      const mins = Math.round((MIN + f * (MAX - MIN)) / 5) * 5;
+      if (mins !== Number(range.value)) apply(mins, true);
+    };
+    let dragging = null;
+    sky.addEventListener("pointerdown", (e) => {
+      if (e.button !== 0) return;
+      dragging = e.pointerId;
+      sky.setPointerCapture(e.pointerId);
+      sky.classList.add("is-dragging");
+      range.focus({ preventScroll: true });
+      fromX(e.clientX);
+    });
+    sky.addEventListener("pointermove", (e) => { if (dragging === e.pointerId) fromX(e.clientX); });
+    const release = (e) => {
+      if (dragging !== e.pointerId) return;
+      dragging = null;
+      sky.classList.remove("is-dragging");
+    };
+    sky.addEventListener("pointerup", release);
+    sky.addEventListener("pointercancel", release);
   }
 
   // Cards lean toward the pointer, with a light that follows it.
