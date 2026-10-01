@@ -416,18 +416,18 @@ a.store:hover::after { translate: 120% 0; }
 .sec-head { max-width: 780px; }
 
 /* Timeline: one real morning, with the phone pinned beside it */
-/* Pick a start time: drag the sun up the morning sky */
+/* Pick a start time: a slider with a sun for a thumb */
 .pick { padding-block: clamp(28px, 4vw, 64px) clamp(56px, 7vw, 100px); }
 .pick-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: clamp(28px, 5vw, 72px); align-items: center; }
 .pick-card {
-  --x: 50%; --sky: #FFE45C;
+  --x: 50%; --f: .3571; --sky: #FFE45C; --thumb: 30px;
   position: relative; overflow: clip;
   padding: clamp(22px, 3vw, 30px); border-radius: 30px;
   background:
-    radial-gradient(70% 120% at var(--x) 118%, color-mix(in srgb, var(--sky) 26%, transparent), transparent 70%),
+    radial-gradient(70% 120% at var(--x) 118%, color-mix(in srgb, var(--sky) 20%, transparent), transparent 70%),
     linear-gradient(180deg, rgba(255, 255, 255, .085), rgba(255, 255, 255, .025));
   border: 1px solid rgba(255, 255, 255, .09);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .09), 0 40px 90px -50px color-mix(in srgb, var(--sky) 60%, transparent);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .09), 0 40px 90px -55px color-mix(in srgb, var(--sky) 45%, transparent);
   -webkit-backdrop-filter: blur(24px) saturate(140%); backdrop-filter: blur(24px) saturate(140%);
 }
 .pick-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
@@ -444,52 +444,35 @@ a.store:hover::after { translate: 120% 0; }
   letter-spacing: -.045em; line-height: .92; color: var(--lime); font-variant-numeric: tabular-nums;
 }
 .pick-time small { font-size: .3em; letter-spacing: 0; color: var(--night-text); }
-
-/* The sky: the sun rises along its path as the time gets later */
-.sky {
-  --f: .3571; --h: .4314; --stars: 0;
-  position: relative; margin-top: 24px; padding-top: 18px;
-  border-radius: 22px; overflow: hidden;
-  background: linear-gradient(0deg, color-mix(in srgb, var(--sky) 16%, transparent), transparent 80%), rgba(6, 7, 10, .35);
-  border: 1px solid rgba(255, 255, 255, .07);
-  cursor: grab; touch-action: pan-y; -webkit-user-select: none; user-select: none;
+.sun-range {
+  /* The track fills with the morning's colors up to the sun. */
+  --fill-end: calc(var(--thumb) / 2 + (100% - var(--thumb)) * var(--f));
+  --track: linear-gradient(90deg, transparent var(--fill-end), #2B2D33 var(--fill-end)),
+           linear-gradient(90deg, #B9A8FF 0%, #8FEBD2 21%, #FFE45C 43%, #C8F53C 71%);
+  margin-top: 30px;
 }
-.sky.is-dragging { cursor: grabbing; }
-.sky-air { position: relative; height: clamp(118px, 13vw, 150px); margin-inline: 30px; clip-path: inset(-300px -60px 0 -60px); }
-.sky-path { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-.sky-path polyline { fill: none; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
-.sky-path-all { stroke: rgba(255, 255, 255, .2); stroke-width: 1.5; stroke-dasharray: 1 7; }
-.sky-path-done { stroke: var(--sky); stroke-width: 2; opacity: .75; }
-.star {
-  position: absolute; left: var(--sx); top: var(--sy);
-  width: 2px; height: 2px; border-radius: 50%; background: #fff;
-  box-shadow: 0 0 6px 1px rgba(255, 255, 255, .55);
-  opacity: calc(var(--stars) * .9);
-  transition: opacity .5s ease;
-  animation: star-twinkle 3.4s ease-in-out var(--d, 0s) infinite;
+.sun-range input { display: block; width: 100%; height: var(--thumb); margin: 0; background: transparent; cursor: pointer; -webkit-appearance: none; appearance: none; }
+.sun-range input:focus-visible { outline: none; }
+.sun-range input::-webkit-slider-runnable-track { height: 8px; border-radius: 999px; background: var(--track); }
+.sun-range input::-moz-range-track { height: 8px; border-radius: 999px; background: var(--track); }
+.sun-range input::-webkit-slider-thumb {
+  width: var(--thumb); height: var(--thumb); margin-top: calc((8px - var(--thumb)) / 2);
+  border: 0; border-radius: 50%; -webkit-appearance: none; appearance: none;
+  background: radial-gradient(circle at 38% 34%, #FFFDF2 0 16%, var(--sky) 66%);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--sky) 16%, transparent), 0 0 22px 4px color-mix(in srgb, var(--sky) 45%, transparent);
+  transition: transform .25s var(--ease);
 }
-@keyframes star-twinkle { 50% { scale: .4; } }
-.sun-glow, .sun {
-  position: absolute; left: calc(var(--f) * 100%); bottom: calc(var(--h) * 100%);
-  translate: -50% 50%; border-radius: 50%; pointer-events: none;
+.sun-range input::-moz-range-thumb {
+  width: var(--thumb); height: var(--thumb); border: 0; border-radius: 50%;
+  background: radial-gradient(circle at 38% 34%, #FFFDF2 0 16%, var(--sky) 66%);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--sky) 16%, transparent), 0 0 22px 4px color-mix(in srgb, var(--sky) 45%, transparent);
+  transition: transform .25s var(--ease);
 }
-.sun-glow { width: 260px; height: 260px; background: radial-gradient(closest-side, color-mix(in srgb, var(--sky) 40%, transparent), transparent); }
-.sun {
-  width: 38px; height: 38px;
-  background: radial-gradient(circle at 38% 34%, #FFFDF2 0 18%, var(--sky) 66%);
-  box-shadow: 0 0 0 7px color-mix(in srgb, var(--sky) 18%, transparent), 0 0 40px 10px color-mix(in srgb, var(--sky) 55%, transparent);
-  transition: scale .25s var(--ease);
-}
-.sky:hover .sun, .sky.is-dragging .sun { scale: 1.12; }
-.sky:has(input:focus-visible) .sun { outline: 2px solid var(--night-text); outline-offset: 6px; }
-.sky-ground {
-  position: relative; height: 38px;
-  border-top: 1px solid rgba(255, 255, 255, .16);
-  background: rgba(14, 15, 18, .6);
-}
-.sky-ticks { position: absolute; inset: 0 30px; }
-.sky-ticks i { position: absolute; top: 0; left: calc(var(--t) * 100%); width: 1px; height: 6px; translate: -50% 0; background: rgba(255, 255, 255, .22); }
-.sky-ticks span { position: absolute; top: 13px; left: calc(var(--t) * 100%); translate: -50% 0; font-size: 12px; font-weight: 600; color: var(--night-muted); white-space: nowrap; }
+.sun-range input:hover::-webkit-slider-thumb, .sun-range input:active::-webkit-slider-thumb { transform: scale(1.1); }
+.sun-range input:hover::-moz-range-thumb, .sun-range input:active::-moz-range-thumb { transform: scale(1.1); }
+.sun-range input:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px var(--night), 0 0 0 5px var(--night-text), 0 0 22px 4px color-mix(in srgb, var(--sky) 45%, transparent); }
+.sun-range input:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 3px var(--night), 0 0 0 5px var(--night-text), 0 0 22px 4px color-mix(in srgb, var(--sky) 45%, transparent); }
+.sun-ends { display: flex; justify-content: space-between; margin-top: 10px; font-size: 12px; font-weight: 600; color: var(--night-muted); }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 
 .timeline {
@@ -842,7 +825,7 @@ a.store:hover::after { translate: 120% 0; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .sun-wrap, .phone-wrap, .fcard, .spark, .star { animation: none; }
+  .sun-wrap, .phone-wrap, .fcard, .spark { animation: none; }
   .scr.flick-out { animation: fade-out .3s ease forwards; }
   .scr.flick-in { animation: fade-in .3s ease forwards; }
   .r-in-up, .r-in-down, .r-out-up, .r-out-down, .tl-marker.ping::after { animation: none; }
@@ -971,32 +954,10 @@ a.store:hover::after { translate: 120% 0; }
             <p class="pick-done">Done by <b><span data-done-time>7:05</span> <span data-done-period>AM</span></b></p>
           </div>
           <p class="pick-time"><span data-start-time>6:45</span><small data-start-period>AM</small></p>
-          <div class="sky" data-sky>
+          <div class="sun-range">
             <label class="sr-only" for="start-range">Start time</label>
-            <input class="sr-only" id="start-range" type="range" min="240" max="660" step="5" value="405" aria-valuetext="6:45 AM" data-start-range>
-            <div class="sky-air" aria-hidden="true">
-              <span class="star" style="--sx: 5%; --sy: 22%; --d: -.4s"></span>
-              <span class="star" style="--sx: 12%; --sy: 52%; --d: -1.8s"></span>
-              <span class="star" style="--sx: 19%; --sy: 12%; --d: -2.6s"></span>
-              <span class="star" style="--sx: 28%; --sy: 34%; --d: -.9s"></span>
-              <span class="star" style="--sx: 37%; --sy: 8%; --d: -3.1s"></span>
-              <span class="star" style="--sx: 47%; --sy: 26%; --d: -1.2s"></span>
-              <span class="star" style="--sx: 58%; --sy: 6%; --d: -2.2s"></span>
-              <span class="star" style="--sx: 69%; --sy: 18%; --d: -.2s"></span>
-              <span class="star" style="--sx: 83%; --sy: 30%; --d: -2.9s"></span>
-              <svg class="sky-path" viewBox="0 0 1000 1000" preserveAspectRatio="none">
-                <polyline class="sky-path-all" points="" data-path-all></polyline>
-                <polyline class="sky-path-done" points="" data-path-done></polyline>
-              </svg>
-              <span class="sun-glow"></span>
-              <span class="sun"></span>
-            </div>
-            <div class="sky-ground" aria-hidden="true">
-              <div class="sky-ticks">
-                <i style="--t: 0"></i><i style="--t: .142857"></i><i style="--t: .285714"></i><i style="--t: .428571"></i><i style="--t: .571429"></i><i style="--t: .714286"></i><i style="--t: .857143"></i><i style="--t: 1"></i>
-                <span style="--t: 0">4 AM</span><span style="--t: 1">11 AM</span>
-              </div>
-            </div>
+            <input id="start-range" type="range" min="240" max="660" step="5" value="405" aria-valuetext="6:45 AM" data-start-range>
+            <div class="sun-ends" aria-hidden="true"><span>4 AM</span><span>11 AM</span></div>
           </div>
         </div>
       </div>
@@ -1666,14 +1627,10 @@ a.store:hover::after { translate: 120% 0; }
   }
 
   // The start time the visitor picks, which every time on the page follows.
-  // Drag the sun, or use the arrow keys. Remembered in this browser.
+  // Remembered in this browser for next time.
   const pick = document.querySelector("[data-pick]");
   if (pick) {
     const range = pick.querySelector("[data-start-range]");
-    const sky = pick.querySelector("[data-sky]");
-    const air = pick.querySelector(".sky-air");
-    const pathAll = pick.querySelector("[data-path-all]");
-    const pathDone = pick.querySelector("[data-path-done]");
     const doneTime = pick.querySelector("[data-done-time]");
     const donePeriod = pick.querySelector("[data-done-period]");
     const MIN = Number(range.min);
@@ -1693,19 +1650,6 @@ a.store:hover::after { translate: 120% 0; }
       }
       return "rgb(200, 245, 60)";
     };
-    // How high the sun stands, from just under the horizon at 4 to high at 11.
-    const sunHeight = (f) => -0.05 + 0.9 * Math.sin(f * Math.PI / 2);
-    const pathPoints = (to) => {
-      const n = Math.max(1, Math.round(to * 100));
-      const points = [];
-      for (let i = 0; i <= n; i++) {
-        const g = (i / n) * to;
-        points.push(`${(g * 1000).toFixed(1)},${(1000 - sunHeight(g) * 1000).toFixed(1)}`);
-      }
-      return points.join(" ");
-    };
-    pathAll.setAttribute("points", pathPoints(1));
-
     const apply = (mins, save) => {
       const start = clockText(mins);
       const done = clockText(mins + 20);
@@ -1716,12 +1660,9 @@ a.store:hover::after { translate: 120% 0; }
       donePeriod.textContent = done.period;
       range.value = String(mins);
       range.setAttribute("aria-valuetext", `${start.time} ${start.period}`);
+      pick.style.setProperty("--f", f.toFixed(4));
       pick.style.setProperty("--x", `${(f * 100).toFixed(1)}%`);
       pick.style.setProperty("--sky", skyAt(mins));
-      sky.style.setProperty("--f", f.toFixed(4));
-      sky.style.setProperty("--h", sunHeight(f).toFixed(4));
-      sky.style.setProperty("--stars", clamp((360 - mins) / 120, 0, 1).toFixed(3));
-      pathDone.setAttribute("points", pathPoints(f));
       if (tl) tl.setStart(mins);
       if (save) { try { localStorage.setItem(KEY, String(mins)); } catch (e) { /* not kept */ } }
     };
@@ -1731,34 +1672,7 @@ a.store:hover::after { translate: 120% 0; }
       if (saved >= MIN && saved <= MAX && saved % 5 === 0) first = saved;
     } catch (e) { /* the default stands */ }
     apply(first, false);
-
-    // Keyboard and assistive tech use the slider underneath.
     range.addEventListener("input", () => apply(Number(range.value), true));
-
-    // Pointers drag the sun across the sky; a vertical swipe still scrolls.
-    const fromX = (clientX) => {
-      const r = air.getBoundingClientRect();
-      const f = clamp((clientX - r.left) / r.width, 0, 1);
-      const mins = Math.round((MIN + f * (MAX - MIN)) / 5) * 5;
-      if (mins !== Number(range.value)) apply(mins, true);
-    };
-    let dragging = null;
-    sky.addEventListener("pointerdown", (e) => {
-      if (e.button !== 0) return;
-      dragging = e.pointerId;
-      sky.setPointerCapture(e.pointerId);
-      sky.classList.add("is-dragging");
-      range.focus({ preventScroll: true });
-      fromX(e.clientX);
-    });
-    sky.addEventListener("pointermove", (e) => { if (dragging === e.pointerId) fromX(e.clientX); });
-    const release = (e) => {
-      if (dragging !== e.pointerId) return;
-      dragging = null;
-      sky.classList.remove("is-dragging");
-    };
-    sky.addEventListener("pointerup", release);
-    sky.addEventListener("pointercancel", release);
   }
 
   // Cards lean toward the pointer, with a light that follows it.
