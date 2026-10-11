@@ -848,7 +848,7 @@ a.store:hover::after { translate: 120% 0; }
       <li><a href="#features">Features</a></li>
       <li><a href="support">Support</a></li>
     </ul>
-    <a class="btn btn-ink" href="#get">Get the app <span class="ms" aria-hidden="true">arrow_forward</span></a>
+    <a class="btn btn-ink" href="waitlist">Join the waitlist <span class="ms" aria-hidden="true">arrow_forward</span></a>
   </nav>
 </header>
 
@@ -1181,22 +1181,27 @@ a.store:hover::after { translate: 120% 0; }
 
 <script>
 (() => {
-  // Paste the App Store link here at launch; every badge on the page becomes a download link.
+  // Paste the App Store link here at launch; every badge on the page becomes a
+  // download link. Until then they lead to the waitlist. (At launch, point the
+  // nav's "Join the waitlist" back at #get too.)
   const APP_STORE_URL = "";
 
-  if (APP_STORE_URL) {
-    document.querySelectorAll("[data-store]").forEach((badge) => {
-      const link = document.createElement("a");
-      link.className = badge.className;
+  document.querySelectorAll("[data-store]").forEach((badge) => {
+    const link = document.createElement("a");
+    link.className = badge.className;
+    link.innerHTML = badge.innerHTML;
+    if (APP_STORE_URL) {
       link.href = APP_STORE_URL;
       link.target = "_blank";
       link.rel = "noopener";
-      link.innerHTML = badge.innerHTML;
       link.querySelector("[data-store-line]").textContent = "Download on the";
       link.setAttribute("aria-label", "Download Daybreak on the App Store");
-      badge.replaceWith(link);
-    });
-  }
+    } else {
+      link.href = "waitlist";
+      link.setAttribute("aria-label", "Coming soon to the App Store. Join the waitlist");
+    }
+    badge.replaceWith(link);
+  });
 
   // Five weeks of mornings, Monday first: a 12-morning streak up to today, a Wednesday.
   const grid = document.querySelector("[data-grid]");
